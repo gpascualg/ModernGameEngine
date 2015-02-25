@@ -1,8 +1,13 @@
-#include "pool.h"
+#include "TaskWorker.h"
+
+#include "TaskWrapper.h"
 
 namespace Pool {
 
-	ThreadPool* ThreadPool::_instance = nullptr;
+	TaskWorker::TaskWorker(Queue* queue, int dequeueCount):
+		WorkerThread(queue, dequeueCount)
+	{
+	}
 
 	void TaskWorker::_functor()
 	{
@@ -34,13 +39,4 @@ namespace Pool {
 		delete [] wrapper;
 	}
 
-	void PermaWorker::_functor()
-    {
-		while (!_stop)
-		{
-            _busy = true;
-				_function(_argument);
-			_busy = false;
-		}
-	}
 }

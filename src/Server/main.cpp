@@ -3,11 +3,13 @@
 
 #include "core.h"
 #include "counter.h"
-#include "pool.h"
+#include "Pool.h"
 #include "Scheduler.h"
+#include "ThreadPool.h"
 #include "Updater.h"
 
 Core::Queue mapsQueue;
+Counter c;
 
 class MapUpdater : public Core::Updater
 {
@@ -18,8 +20,7 @@ public:
 
 	virtual int update() override
 	{
-		printf(".");
-		fflush(stdout);
+		printf("%d\n", c.inc());
 
 		return Updater::update();
 		//std::cout << "ID: " << std::this_thread::get_id() << std::endl;
@@ -35,8 +36,7 @@ public:
 
 	virtual int update() override
 	{
-		printf("/");
-		fflush(stdout);
+		printf("%d\n", c.inc());
 
 		return Updater::update();
 		//std::cout << "ID: " << std::this_thread::get_id() << std::endl;
@@ -53,10 +53,9 @@ Core::Updater* mapUpdater_1 = nullptr;
 Core::Updater* mapUpdater_2 = nullptr;
 
 int main() {
-	//Counter c;
 
 	threadPool = Pool::ThreadPool::create(4);
-	scheduler = Scheduler::create(500);
+	scheduler = Scheduler::create(100);
 
 	mapUpdater_1 = new SectorUpdater();
 	mapUpdater_2 = new MapUpdater();

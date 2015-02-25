@@ -12,20 +12,17 @@ project(lfs)
 
 file(GLOB_RECURSE sources_Server Server/*.cpp Server/*.h)
 file(GLOB_RECURSE sources_Utils Utils/*.cpp Utils/*.h)
-file(GLOB_RECURSE sources_Pool Pool/*.cpp Pool/*.h)
 
 set(EPS_SRCS
   ${EPS_SRCS}
   ${sources_Server}
   ${sources_Utils}
-  ${sources_Pool}
 )
 
 include_directories(
   ${CMAKE_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/Server
   ${CMAKE_CURRENT_SOURCE_DIR}/Utils
-  ${CMAKE_CURRENT_SOURCE_DIR}/Pool
 )
 
 add_executable(lfs

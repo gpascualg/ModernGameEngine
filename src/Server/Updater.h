@@ -3,7 +3,7 @@
 #include <atomic>
 
 #include "concurrentqueue.h"
-#include "pool.h"
+#include "Pool.h"
 
 namespace Core
 {
@@ -36,10 +36,7 @@ namespace Core
 			_functions = new Function[_bulkDequeue];
 		}
 
-		Pool::Future addToPool()
-		{
-			return Pool::ThreadPool::get()->enqueue(Pool::Function(entry_point), this);
-		}
+		Pool::Future addToPool();
 
 		bool queue_task(ProducerToken& token, Function function)
 		{
