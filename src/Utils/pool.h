@@ -1,10 +1,14 @@
+#pragma once
+
 #include <atomic>
 #include <cmath>
 #include <future>
 #include <functional>
 #include <iostream>
 #include <thread>
+#include <unordered_map>
 #include <vector>
+
 
 #include "core.h"
 #include "concurrentqueue.h"
@@ -20,10 +24,12 @@ namespace Pool
 
 	struct TaskWrapper;
 
-	typedef moodycamel::ConcurrentQueue<TaskWrapper> Queue;
-	typedef std::function<int(void*)> Function;
-	typedef std::packaged_task<int(void*)> Task;
-	typedef std::future<int> Future;
+	using Queue = moodycamel::ConcurrentQueue<TaskWrapper>;
+	using ConsumerToken = moodycamel::ConsumerToken;
+	using ProducerToken = moodycamel::ProducerToken;
+	using Function = std::function<int(void*)>;
+	using Task = std::packaged_task<int(void*)>;
+	using Future = std::future<int>;
 
 
 	struct TaskWrapper
@@ -51,26 +57,31 @@ namespace Pool
 			me->_functor();
 		}
 
-		WorkerThread(Queue* queue):
+		WorkerThread(Queue* queue, int bulkDequeue):
 			_thread(_static_functor, this),
 			_queue(queue),
-			_token(*queue),
+			_bulkDequeue{bulkDequeue},
 			_busy{false},
 			_stop{false}
 		{
 		}
 
-		/*
-		LFS_INLINE void setTask(Task&& t) {
-			_task = std::move(t);
-			_start = true;
+		WorkerThread(nullptr_t n):
+			_thread(_static_functor, this),
+			_busy{false},
+			_stop{false}
+		{
 		}
-		*/
+
+		LFS_INLINE std::thread::id getID()
+		{
+			return std::this_thread::get_id();
+		}
 
 		Queue* _queue;
-		moodycamel::ConsumerToken _token;
 
 		std::thread _thread;
+		int _bulkDequeue;
 		std::atomic<bool> _busy;
 		std::atomic<bool> _stop;
 	};
@@ -79,78 +90,54 @@ namespace Pool
 		friend ThreadPool;
 
 	private:
-		void _functor()
-		{
-			TaskWrapper wrapper;
+		void _functor();
 
-			while (1)
-			{
-				while (!this->_stop) {
-					if (_queue->try_dequeue(_token, wrapper))
-					{
-						break;
-					}
-
-					std::this_thread::sleep_for(std::chrono::milliseconds(100));
-				}
-
-				if (this->_stop) return;
-
-				this->_busy = true;
-					wrapper.task(wrapper.argument);
-				this->_busy = false;
-			}
-		}
-
-		TaskWorker(Queue* queue):
-			WorkerThread(queue)
+		TaskWorker(Queue* queue, int dequeueCount):
+			WorkerThread(queue, dequeueCount)
 		{
 		}
 	};
 
-	/*
 	class PermaWorker : public WorkerThread {
 		friend ThreadPool;
 
-		void _functor()
-		{
-			while (!this->_start) std::this_thread::sleep_for (std::chrono::milliseconds(100));
+	private:
+		void _functor();
 
-			while (1)
-			{
-				if (this->_stop) return;
-
-				this->_busy = true;
-					//this->_task(this->_attribute);
-				this->_busy = false;
-			}
-		}
-
-		PermaWorker(Queue* queue):
-			WorkerThread(queue)
+		PermaWorker(Function& function, void* argument):
+			WorkerThread(nullptr),
+			_function(std::move(function)),
+			_argument(argument)
 		{
 		}
+
+		Function&& _function;
+		void* _argument;
 	};
-	*/
 
 	class ThreadPool {
+		friend class WorkerThread;
+		friend class TaskWorker;
+
 	private:
-		ThreadPool(int nThreads):
+		ThreadPool(int nThreads, int bulkDequeue):
 			_max{nThreads},
+			_bulkDequeue{bulkDequeue},
 			_token(_queue)
 		{
 			for (int i = 0; i < nThreads; ++i)
 			{
-				_workers.push_back(new TaskWorker(&_queue));
+				TaskWorker* worker = new TaskWorker(&_queue, _bulkDequeue);
+				_workers.push_back(worker);
 			}
 		}
 
 	public:
-		static ThreadPool* get(int nThreads)
+		static ThreadPool* create(int nThreads, int bulkDequeue = 5)
 		{
 			if (!_instance)
 			{
-				_instance = new ThreadPool(nThreads);
+				_instance = new ThreadPool(nThreads, bulkDequeue);
 			}
 
 			return get();
@@ -181,6 +168,12 @@ namespace Pool
 			return future;
 		}
 
+		LFS_INLINE void permanent(Function&& function, void* argument)
+		{			
+			PermaWorker* worker = new PermaWorker(function, argument);
+			_workers.push_back(worker);
+		}
+
 		LFS_INLINE void stop()
 		{
 			for (WorkerThread* worker : _workers)
@@ -201,9 +194,10 @@ namespace Pool
 		static ThreadPool* _instance;
 
 		int _max;
+		int _bulkDequeue;
 		std::vector<WorkerThread*> _workers;
-		
+
 		Queue _queue;
-		moodycamel::ProducerToken _token;
+		ProducerToken _token;
 	};
 };
