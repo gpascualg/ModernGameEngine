@@ -6,7 +6,7 @@ namespace Pool {
 
 	void TaskWorker::_functor()
 	{
-		TaskWrapper* wrapper = new TaskWrapper[_bulkDequeue];
+		TaskWrapper** wrapper = new TaskWrapper*[_bulkDequeue];
 		size_t dequeueCount = 0;
 
 		while (1)
@@ -25,7 +25,8 @@ namespace Pool {
 			this->_busy = true;
 			for (size_t i = 0; i < dequeueCount; ++i)
 			{
-				wrapper[i].task(wrapper[i].argument);
+				wrapper[i]->task(wrapper[i]->argument);
+                delete wrapper[i];
 			}
 			this->_busy = false;
 		}
@@ -34,12 +35,12 @@ namespace Pool {
 	}
 
 	void PermaWorker::_functor()
-	{
-		while (!this->_stop)
+    {
+		while (!_stop)
 		{
-			this->_busy = true;
-				this->_function(this->_argument);
-			this->_busy = false;
+            _busy = true;
+				_function(_argument);
+			_busy = false;
 		}
 	}
 }

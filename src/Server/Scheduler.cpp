@@ -15,7 +15,7 @@ namespace Core {
 
 		if (ticksElapsed >= 1)
 		{
-			uint64_t realTicksElapsed = (uint64_t)(ticksElapsed);
+			int realTicksElapsed = static_cast<int>(ticksElapsed);
 			double lambdaTime = (ticksElapsed - realTicksElapsed) * _updateEvery;
 
 			for (auto& ticker : _timers)
@@ -31,7 +31,7 @@ namespace Core {
 				}
 			}
 
-			_lastUpdate = time_now - lambdaTime;
+			_lastUpdate = time_now - static_cast<uint64_t>(lambdaTime);
 		}
 
 		return 1;

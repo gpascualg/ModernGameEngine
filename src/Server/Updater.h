@@ -38,7 +38,7 @@ namespace Core
 
 		Pool::Future addToPool()
 		{
-			return Pool::ThreadPool::get()->enqueue(entry_point, this);
+			return Pool::ThreadPool::get()->enqueue(Pool::Function(entry_point), this);
 		}
 
 		bool queue_task(ProducerToken& token, Function function)
@@ -48,7 +48,7 @@ namespace Core
 
 		virtual int update()
 		{
-			updateQueue();
+			return updateQueue();
 		}
 
 	private:
@@ -59,6 +59,8 @@ namespace Core
 			{
 				_functions[i](this);
 			}
+
+            return 1;
 		}
 
 		static int entry_point(void* me)

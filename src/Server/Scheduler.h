@@ -69,7 +69,7 @@ namespace Core {
 			std::chrono::seconds sec(1);
 			auto base = std::chrono::duration_cast<TimeBase>(sec).count();
 
-			_updateEvery = base / ticksPerSecond,
+			_updateEvery = static_cast<double>(base) / ticksPerSecond,
 
 			printf("[DEBUG]\tTicksPerSecond = %d\n\tUpdateEvery = %3.3f (%0.5lfs)\n", _ticksPerSecond, _updateEvery, _updateEvery / base);
 		}

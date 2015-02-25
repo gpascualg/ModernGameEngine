@@ -24,6 +24,13 @@ extern "C" {
 
 
 //-------------------------------------
+//  C++11 support
+//-------------------------------------
+#define LFS_NOEXCEPT noexcept
+#define LFS_CONSTEXPR constexpr
+
+
+//-------------------------------------
 //  Thread local
 //-------------------------------------
 #define LFS_THREAD_LOCAL __thread

@@ -21,7 +21,7 @@ public:
 		printf(".");
 		fflush(stdout);
 
-		Updater::update();
+		return Updater::update();
 		//std::cout << "ID: " << std::this_thread::get_id() << std::endl;
 	}
 };
@@ -38,7 +38,7 @@ public:
 		printf("/");
 		fflush(stdout);
 
-		Updater::update();
+		return Updater::update();
 		//std::cout << "ID: " << std::this_thread::get_id() << std::endl;
 	}
 };
@@ -64,7 +64,7 @@ int main() {
 	scheduler->every(100, mapUpdater_1);
 	scheduler->every(50, mapUpdater_2);
 
-	threadPool->permanent(Scheduler::update_handler, scheduler);
+	threadPool->permanent(Pool::Function(Scheduler::update_handler), scheduler);
 
 	getchar();
 

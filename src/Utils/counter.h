@@ -5,7 +5,7 @@
 
 class Counter {
 public:
-	Counter() noexcept :
+    Counter() LFS_NOEXCEPT :
 		_counter{0}
 	{}
 

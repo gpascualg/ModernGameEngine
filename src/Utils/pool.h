@@ -24,7 +24,7 @@ namespace Pool
 
 	struct TaskWrapper;
 
-	using Queue = moodycamel::ConcurrentQueue<TaskWrapper>;
+	using Queue = moodycamel::ConcurrentQueue<TaskWrapper*>;
 	using ConsumerToken = moodycamel::ConsumerToken;
 	using ProducerToken = moodycamel::ProducerToken;
 	using Function = std::function<int(void*)>;
@@ -58,7 +58,6 @@ namespace Pool
 		}
 
 		WorkerThread(Queue* queue, int bulkDequeue):
-			_thread(_static_functor, this),
 			_queue(queue),
 			_bulkDequeue{bulkDequeue},
 			_busy{false},
@@ -67,11 +66,15 @@ namespace Pool
 		}
 
 		WorkerThread(nullptr_t n):
-			_thread(_static_functor, this),
 			_busy{false},
 			_stop{false}
 		{
 		}
+
+        LFS_INLINE void start()
+        {
+            _thread = std::move(std::thread(_static_functor, this));
+        }
 
 		LFS_INLINE std::thread::id getID()
 		{
@@ -89,8 +92,8 @@ namespace Pool
 	class TaskWorker : public WorkerThread {
 		friend ThreadPool;
 
-	private:
-		void _functor();
+    private:
+        virtual void _functor() override;
 
 		TaskWorker(Queue* queue, int dequeueCount):
 			WorkerThread(queue, dequeueCount)
@@ -101,8 +104,9 @@ namespace Pool
 	class PermaWorker : public WorkerThread {
 		friend ThreadPool;
 
-	private:
-		void _functor();
+
+    private:
+        virtual void _functor() override;
 
 		PermaWorker(Function& function, void* argument):
 			WorkerThread(nullptr),
@@ -111,7 +115,7 @@ namespace Pool
 		{
 		}
 
-		Function&& _function;
+		Function _function;
 		void* _argument;
 	};
 
@@ -128,6 +132,7 @@ namespace Pool
 			for (int i = 0; i < nThreads; ++i)
 			{
 				TaskWorker* worker = new TaskWorker(&_queue, _bulkDequeue);
+                worker->start();
 				_workers.push_back(worker);
 			}
 		}
@@ -153,7 +158,7 @@ namespace Pool
 		{
 			for (WorkerThread* worker : _workers)
 			{
-				assert(worker->_stop && !worker->_bussy);
+				assert(worker->_stop && !worker->_busy);
 
 				delete worker;
 			}	
@@ -163,14 +168,15 @@ namespace Pool
 		{
 			Task task(function);
 			Future future = task.get_future();
-			_queue.enqueue(_token, TaskWrapper(task, argument));
+			_queue.enqueue(_token, new TaskWrapper(task, argument));
 			
 			return future;
 		}
 
-		LFS_INLINE void permanent(Function&& function, void* argument)
-		{			
+		LFS_INLINE void permanent(Function& function, void* argument)
+        {
 			PermaWorker* worker = new PermaWorker(function, argument);
+            worker->start();
 			_workers.push_back(worker);
 		}
 
