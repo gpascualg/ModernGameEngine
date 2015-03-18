@@ -39,5 +39,8 @@ elseif ( WIN32 )
 	set (THREAD_LIB "")
 endif()
 
-# add core sources
+# Add dependencies
+add_subdirectory(dep)
+
+# Add core sources
 add_subdirectory(src)

@@ -16,3 +16,21 @@
 #else
     #error Unsupported platform!
 #endif
+
+#include <iostream>
+#include <chrono>
+#include <functional>
+#include <future>
+#include <vector>
+#include "Broadcast.h"
+using time_base = std::chrono::microseconds;
+
+
+#define _PASTE(x, y) x ## y
+#define PASTE(x, y) _PASTE(x, y)
+
+#define signals public
+
+#define signal(f, ...) \
+    void f(__VA_ARGS__) { \
+    };

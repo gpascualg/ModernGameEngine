@@ -1,71 +1,81 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <GLFW/glfw3.h>
 
 #include "core.h"
 #include "counter.h"
+
+#include "Broadcast.h"
 #include "Pool.h"
 #include "Scheduler.h"
 #include "ThreadPool.h"
 #include "Updater.h"
+#include "Window.h"
 
-Core::Queue mapsQueue;
 Counter c;
 
-class MapUpdater : public Core::Updater
+class Scene : public Core::Updater
 {
 public:
-	MapUpdater() : 
-		Updater(&mapsQueue, 100)
+	Scene(Window* window) :
+		Updater(),
+		_window(window)
 	{}
 
 	virtual int update() override
 	{
-		printf("%d\n", c.inc());
+		//printf("%d\n", c.inc());
 
 		return Updater::update();
 		//std::cout << "ID: " << std::this_thread::get_id() << std::endl;
 	}
-};
 
-class SectorUpdater : public Core::Updater
-{
-public:
-	SectorUpdater() : 
-		Updater(&mapsQueue, 100)
-	{}
-
-	virtual int update() override
+	void onResize(int width, int height)
 	{
-		printf("%d\n", c.inc());
+		int side = std::min(width, height);
+	    glViewport((width - side) / 2, (height - side) / 2, side, side);
 
-		return Updater::update();
-		//std::cout << "ID: " << std::this_thread::get_id() << std::endl;
+	    glMatrixMode(GL_PROJECTION);
+	    glLoadIdentity();
+	#ifdef QT_OPENGL_ES_1
+	    glOrthof(-1.5, +1.5, -1.5, +1.5, 0.0, 15.0);
+	#else
+	    glOrtho(-1.5, +1.5, -1.5, +1.5, 0.0, 15.0);
+	#endif
+	    glMatrixMode(GL_MODELVIEW);
+
+		printf("Called %dx%d\n", width, height);
+		//_window->update();
 	}
+
+private:
+	Window* _window;
 };
 
-using time_base = std::chrono::microseconds;
 using Scheduler = Core::Scheduler<time_base>;
 
 Pool::ThreadPool* threadPool = nullptr;
 Scheduler* scheduler = nullptr;
 
-Core::Updater* mapUpdater_1 = nullptr;
-Core::Updater* mapUpdater_2 = nullptr;
+Scene* scene = nullptr;
 
 int main() {
 
 	threadPool = Pool::ThreadPool::create(4);
 	scheduler = Scheduler::create(100);
 
-	mapUpdater_1 = new SectorUpdater();
-	mapUpdater_2 = new MapUpdater();
+	//threadPool->permanent(Pool::Function(Scheduler::update_handler), scheduler);
+	Window window(640, 480, "CubGPU");
 
-	scheduler->every(100, mapUpdater_1);
-	scheduler->every(50, mapUpdater_2);
+	// Setup signals
+	Broadcast<int, int>::bind(&window, &Window::resize, scene, &Scene::onResize);
 
-	threadPool->permanent(Pool::Function(Scheduler::update_handler), scheduler);
+	// Setup scene
+	scene = new Scene(&window);
+	scheduler->every(50, scene);
 
-	getchar();
+
+	window.mainloop(scheduler);
 
 	printf("[END] Stopping all threads\n");
 
@@ -74,8 +84,7 @@ int main() {
 
 	printf("[END] Cleaning memory\n");
 
-	delete mapUpdater_1;
-	delete mapUpdater_2;
+	delete scene;
 	delete scheduler;
 	delete threadPool;
 

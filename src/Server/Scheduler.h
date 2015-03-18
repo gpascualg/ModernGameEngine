@@ -81,5 +81,6 @@ namespace Core {
 		double _updateEvery;
 		uint64_t _lastUpdate;
 		std::vector<Ticker> _timers;
+		std::vector<std::function<void(void)> > _singleExec;
 	};
 }

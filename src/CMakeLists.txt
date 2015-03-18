@@ -13,12 +13,14 @@ project(lfs)
 file(GLOB_RECURSE sources_Server Server/*.cpp Server/*.h)
 file(GLOB_RECURSE sources_Utils Utils/*.cpp Utils/*.h)
 file(GLOB_RECURSE sources_Pool Pool/*.cpp Pool/*.h)
+file(GLOB_RECURSE sources_Window Window/*.cpp Window/*.h)
 
 set(EPS_SRCS
   ${EPS_SRCS}
   ${sources_Server}
   ${sources_Utils}
   ${sources_Pool}
+  ${sources_Window}
 )
 
 include_directories(
@@ -26,6 +28,9 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/Server
   ${CMAKE_CURRENT_SOURCE_DIR}/Utils
   ${CMAKE_CURRENT_SOURCE_DIR}/Pool
+  ${CMAKE_CURRENT_SOURCE_DIR}/Window
+
+  ${CMAKE_SOURCE_DIR}/dep/glfw/include
 )
 
 add_executable(lfs
@@ -34,6 +39,8 @@ add_executable(lfs
 
 target_link_libraries(lfs
   ${THREAD_LIB}
+  glfw
+  ${GLFW_LIBRARIES}
 )
 
 install()

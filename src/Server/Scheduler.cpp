@@ -34,6 +34,11 @@ namespace Core {
 			_lastUpdate = time_now - static_cast<uint64_t>(lambdaTime);
 		}
 
+		while (!_singleExec.empty())
+		{
+			
+		}
+
 		return 1;
 	}
 
