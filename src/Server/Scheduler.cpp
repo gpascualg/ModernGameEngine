@@ -34,10 +34,22 @@ namespace Core {
 			_lastUpdate = time_now - static_cast<uint64_t>(lambdaTime);
 		}
 
-		while (!_singleExec.empty())
-		{
-			
-		}
+        size_t dequeueCount;
+        std::function<void(void)> fns[5];
+
+        while ((dequeueCount = _singleExec.try_dequeue_bulk(fns, 5)) > 0)
+        {
+            for (auto fnc : fns)
+            {
+                if (!dequeueCount)
+                {
+                    break;
+                }
+
+                fnc();
+                --dequeueCount;
+            }
+        }
 
 		return 1;
 	}

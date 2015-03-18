@@ -10,24 +10,27 @@
 
 project(lfs)
 
+file(GLOB_RECURSE sources_Game Game/*.cpp Game/*.h)
+file(GLOB_RECURSE sources_Pool Pool/*.cpp Pool/*.h)
 file(GLOB_RECURSE sources_Server Server/*.cpp Server/*.h)
 file(GLOB_RECURSE sources_Utils Utils/*.cpp Utils/*.h)
-file(GLOB_RECURSE sources_Pool Pool/*.cpp Pool/*.h)
 file(GLOB_RECURSE sources_Window Window/*.cpp Window/*.h)
 
 set(EPS_SRCS
   ${EPS_SRCS}
+  ${sources_Game}
+  ${sources_Pool}
   ${sources_Server}
   ${sources_Utils}
-  ${sources_Pool}
   ${sources_Window}
 )
 
 include_directories(
   ${CMAKE_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/Game
+  ${CMAKE_CURRENT_SOURCE_DIR}/Pool
   ${CMAKE_CURRENT_SOURCE_DIR}/Server
   ${CMAKE_CURRENT_SOURCE_DIR}/Utils
-  ${CMAKE_CURRENT_SOURCE_DIR}/Pool
   ${CMAKE_CURRENT_SOURCE_DIR}/Window
 
   ${CMAKE_SOURCE_DIR}/dep/glfw/include

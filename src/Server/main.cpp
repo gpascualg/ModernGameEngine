@@ -6,74 +6,36 @@
 #include "counter.h"
 
 #include "Broadcast.h"
+#include "Game.h"
 #include "Pool.h"
 #include "Scheduler.h"
 #include "ThreadPool.h"
 #include "Updater.h"
 #include "Window.h"
 
-Counter c;
-
-class Scene : public Core::Updater
-{
-public:
-	Scene(Window* window) :
-		Updater(),
-		_window(window)
-	{}
-
-	virtual int update() override
-	{
-		//printf("%d\n", c.inc());
-
-		return Updater::update();
-		//std::cout << "ID: " << std::this_thread::get_id() << std::endl;
-	}
-
-	void onResize(int width, int height)
-	{
-		int side = std::min(width, height);
-	    glViewport((width - side) / 2, (height - side) / 2, side, side);
-
-	    glMatrixMode(GL_PROJECTION);
-	    glLoadIdentity();
-	#ifdef QT_OPENGL_ES_1
-	    glOrthof(-1.5, +1.5, -1.5, +1.5, 0.0, 15.0);
-	#else
-	    glOrtho(-1.5, +1.5, -1.5, +1.5, 0.0, 15.0);
-	#endif
-	    glMatrixMode(GL_MODELVIEW);
-
-		printf("Called %dx%d\n", width, height);
-		//_window->update();
-	}
-
-private:
-	Window* _window;
-};
-
 using Scheduler = Core::Scheduler<time_base>;
 
 Pool::ThreadPool* threadPool = nullptr;
 Scheduler* scheduler = nullptr;
 
-Scene* scene = nullptr;
+Game* game = nullptr;
 
 int main() {
 
-	threadPool = Pool::ThreadPool::create(4);
+    // Setup pool and schedule
+	threadPool = Pool::ThreadPool::create(0);
 	scheduler = Scheduler::create(100);
 
-	//threadPool->permanent(Pool::Function(Scheduler::update_handler), scheduler);
-	Window window(640, 480, "CubGPU");
+	// Setup window and scene
+    Window window(640, 480, "CubGPU");
+    game = new Game(&window);
+    scheduler->every(50, game);
 
-	// Setup signals
-	Broadcast<int, int>::bind(&window, &Window::resize, scene, &Scene::onResize);
-
-	// Setup scene
-	scene = new Scene(&window);
-	scheduler->every(50, scene);
-
+    // Setup signal bindings
+    bind(&window, &Window::initializeGL, game, &Game::initializeGL);
+    bind(&window, &Window::draw, game, &Game::draw);
+    bind(&window, &Window::resize, game, &Game::onResize);
+    bind(&window, &Window::mousemove, game, &Game::onMouseMove);
 
 	window.mainloop(scheduler);
 
@@ -83,8 +45,10 @@ int main() {
 	threadPool->join();
 
 	printf("[END] Cleaning memory\n");
+    
+    unbindAll();
 
-	delete scene;
+    delete game;
 	delete scheduler;
 	delete threadPool;
 

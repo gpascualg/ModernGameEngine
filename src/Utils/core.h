@@ -17,6 +17,15 @@
     #error Unsupported platform!
 #endif
 
+// Windows defines
+#ifdef min
+    #undef min
+#endif
+
+#ifdef max
+    #undef max
+#endif
+
 #include <iostream>
 #include <chrono>
 #include <functional>
@@ -34,3 +43,4 @@ using time_base = std::chrono::microseconds;
 #define signal(f, ...) \
     void f(__VA_ARGS__) { \
     };
+

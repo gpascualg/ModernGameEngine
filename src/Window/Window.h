@@ -16,6 +16,12 @@ namespace Core
 
 using Scheduler = Core::Scheduler<time_base>;
 
+enum Mouse
+{
+    LeftButton  = 1,
+    RightButton = 2
+};
+
 class Window
 {
     template<typename ... T>
@@ -32,17 +38,19 @@ public:
     }
 
 signals:
+    signal(initializeGL);
+    signal(draw);
     signal(resize, int, int);
-    signal(mousemove, int, int);
+    signal(mousemove, double, double, uint8_t);
 
 private:
-    static void _resizeHandler(GLFWwindow* w, int width, int height)
-    {
-        Broadcast<int, int>::emit(_windowToThis[(uintptr_t)w], &Window::resize, width, height);
-    }
+    static void _resizeHandler(GLFWwindow* w, int width, int height);
+    static void _refreshHandler(GLFWwindow* w);
+    static void _cursorPosHandler(GLFWwindow* w, double x, double y);
 
 private:
     GLFWwindow* _window;
+    Scheduler* _scheduler;
     std::atomic<bool> _update;
 
     static std::map<uintptr_t, Window*> _windowToThis;

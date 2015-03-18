@@ -11,12 +11,7 @@ namespace Core
 
 	template <typename T>
 	class Scheduler;
-
-	using Function = std::function<int(Updater*)>;
-	using Queue = moodycamel::ConcurrentQueue<Function>;
-	using ProducerToken = moodycamel::ProducerToken;
-	using ConsumerToken = moodycamel::ConsumerToken;
-
+    
 	class Updater
 	{
 		template <typename T>
@@ -25,7 +20,6 @@ namespace Core
 	public:
 		virtual ~Updater()
 		{
-			delete [] _functions;
 		}
 
 	protected:
@@ -38,6 +32,7 @@ namespace Core
 		virtual int update()
 		{
 			
+            return 0;
 		}
 
 	private:
@@ -47,8 +42,6 @@ namespace Core
 		}
 
 	protected:
-		Queue* _queue;
 		int _bulkDequeue;
-		Function* _functions;
 	};
 }

@@ -8,6 +8,7 @@
 #include <thread>
 
 #include "core.h"
+#include "concurrentqueue.h"
 
 
 namespace Core {
@@ -53,6 +54,11 @@ namespace Core {
 			_timers.push_back(Ticker{updater, ticks, 0});
 		}
 
+        LFS_INLINE void once(std::function<void(void)> func)
+        {
+            _singleExec.enqueue(func);
+        }
+
 		int update();
 
 		static int update_handler(void* me)
@@ -81,6 +87,6 @@ namespace Core {
 		double _updateEvery;
 		uint64_t _lastUpdate;
 		std::vector<Ticker> _timers;
-		std::vector<std::function<void(void)> > _singleExec;
+        moodycamel::ConcurrentQueue <std::function<void(void)> > _singleExec;
 	};
 }
