@@ -23,10 +23,10 @@ Game* game = nullptr;
 int main() {
 
     // Setup pool and schedule
-	threadPool = Pool::ThreadPool::create(0);
-	scheduler = Scheduler::create(100);
+    threadPool = Pool::ThreadPool::create(0);
+    scheduler = Scheduler::create(100);
 
-	// Setup window and scene
+    // Setup window and scene
     Window window(640, 480, "CubGPU");
     game = new Game(&window);
     scheduler->every(50, game);
@@ -37,20 +37,20 @@ int main() {
     bind(&window, &Window::resize, game, &Game::onResize);
     bind(&window, &Window::mousemove, game, &Game::onMouseMove);
 
-	window.mainloop(scheduler);
+    window.mainloop(scheduler);
 
-	printf("[END] Stopping all threads\n");
+    printf("[END] Stopping all threads\n");
 
-	threadPool->stop();
-	threadPool->join();
+    threadPool->stop();
+    threadPool->join();
 
-	printf("[END] Cleaning memory\n");
+    printf("[END] Cleaning memory\n");
     
     unbindAll();
 
     delete game;
-	delete scheduler;
-	delete threadPool;
+    delete scheduler;
+    delete threadPool;
 
-	return 0;
+    return 0;
 }

@@ -6,8 +6,6 @@
 #include <functional>
 #include <map>
 
-#include <GLFW/glfw3.h>
-
 namespace Core
 {
     template<typename T>
@@ -38,10 +36,10 @@ public:
     }
 
 signals:
-    signal(initializeGL);
-    signal(draw);
-    signal(resize, int, int);
-    signal(mousemove, double, double, uint8_t);
+    void initializeGL() SIGNAL;
+    void draw() SIGNAL;
+    void resize(int, int) SIGNAL;
+    void mousemove(double, double, uint8_t) SIGNAL;
 
 private:
     static void _resizeHandler(GLFWwindow* w, int width, int height);

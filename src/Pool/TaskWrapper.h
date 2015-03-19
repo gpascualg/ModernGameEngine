@@ -4,13 +4,13 @@
 
 namespace Pool {
 
-	struct TaskWrapper
-	{
-		Task task;
-		void* argument;
+    struct TaskWrapper
+    {
+        Task task;
+        void* argument;
 
-		TaskWrapper();
-		TaskWrapper(Task& _task, void* _argument);
-	};
+        TaskWrapper();
+        TaskWrapper(Task& _task, void* _argument);
+    };
 
 }

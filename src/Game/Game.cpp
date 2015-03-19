@@ -1,8 +1,6 @@
 #include "Game.h"
 #include "Window.h"
 
-#include <GLFW/glfw3.h>
-
 Game::Game(Window* window) :
     Updater(),
     _window(window),

@@ -16,19 +16,19 @@
 
 namespace Pool
 {
-	class ThreadPool;
-	class WorkerThread;
+    class ThreadPool;
+    class WorkerThread;
 
-	class TaskWorker;
-	class PermaWorker;
+    class TaskWorker;
+    class PermaWorker;
 
-	struct TaskWrapper;
+    struct TaskWrapper;
 
-	using Queue = moodycamel::ConcurrentQueue<TaskWrapper*>;
-	using ConsumerToken = moodycamel::ConsumerToken;
-	using ProducerToken = moodycamel::ProducerToken;
-	using Function = std::function<int(void*)>;
-	using Task = std::packaged_task<int(void*)>;
-	using Future = std::future<int>;
-	
+    using Queue = moodycamel::ConcurrentQueue<TaskWrapper*>;
+    using ConsumerToken = moodycamel::ConsumerToken;
+    using ProducerToken = moodycamel::ProducerToken;
+    using Function = std::function<int(void*)>;
+    using Task = std::packaged_task<int(void*)>;
+    using Future = std::future<int>;
+    
 };

@@ -34,13 +34,13 @@
 #include "Broadcast.h"
 using time_base = std::chrono::microseconds;
 
-
-#define _PASTE(x, y) x ## y
-#define PASTE(x, y) _PASTE(x, y)
-
 #define signals public
+#define SIGNAL {}
 
-#define signal(f, ...) \
-    void f(__VA_ARGS__) { \
-    };
-
+#include <GLFW/glfw3.h>
+#ifdef _MSC_VER
+#undef APIENTRY
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WGL
+#include <GLFW/glfw3native.h>
+#endif

@@ -5,17 +5,17 @@
 
 namespace Pool {
 
-	class PermaWorker : public WorkerThread {
-		friend ThreadPool;
+    class PermaWorker : public WorkerThread {
+        friend ThreadPool;
 
 
     private:
-		PermaWorker(Function& function, void* argument);
-		
+        PermaWorker(Function& function, void* argument);
+        
         virtual void _functor() override;
 
-		Function _function;
-		void* _argument;
-	};
+        Function _function;
+        void* _argument;
+    };
 
 }
