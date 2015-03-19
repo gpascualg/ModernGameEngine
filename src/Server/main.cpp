@@ -21,9 +21,8 @@ Scheduler* scheduler = nullptr;
 Game* game = nullptr;
 
 int main() {
-
-    // Setup pool and schedule
-    threadPool = Pool::ThreadPool::create(0);
+    // Setup pool and scheduler
+    threadPool = Pool::ThreadPool::create(1);
     scheduler = Scheduler::create(100);
 
     // Setup window and scene
@@ -45,7 +44,7 @@ int main() {
     threadPool->join();
 
     printf("[END] Cleaning memory\n");
-    
+
     unbindAll();
 
     delete game;

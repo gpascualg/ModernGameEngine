@@ -34,19 +34,15 @@ namespace Core {
             _lastUpdate = time_now - static_cast<uint64_t>(lambdaTime);
         }
 
+        // One time executions are done synchronized, keep always that
+        // in mind
         size_t dequeueCount;
         std::function<void(void)> fns[5];
-
         while ((dequeueCount = _singleExec.try_dequeue_bulk(fns, 5)) > 0)
         {
-            for (auto fnc : fns)
+            for (int i = 0; i < dequeueCount; ++i)
             {
-                if (!dequeueCount)
-                {
-                    break;
-                }
-
-                fnc();
+                fns[i]();
                 --dequeueCount;
             }
         }
