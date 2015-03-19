@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Pool.h"
-#include "WorkerThread.h"
+#include "Pool.hpp"
+#include "WorkerThread.hpp"
 
 namespace Pool {
 

@@ -1,6 +1,6 @@
-#include "TaskWorker.h"
+#include "TaskWorker.hpp"
 
-#include "TaskWrapper.h"
+#include "TaskWrapper.hpp"
 
 namespace Pool {
 

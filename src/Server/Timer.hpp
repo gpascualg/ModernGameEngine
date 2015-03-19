@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core.h"
-#include "Updater.h"
+#include "core.hpp"
+#include "Updater.hpp"
 
 class Timer : public Core::Updater
 {

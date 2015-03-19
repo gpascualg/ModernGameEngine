@@ -2,16 +2,16 @@
 #include <stdlib.h>
 #include <GLFW/glfw3.h>
 
-#include "core.h"
-#include "counter.h"
+#include "core.hpp"
+#include "counter.hpp"
 
-#include "Broadcast.h"
-#include "Game.h"
-#include "Pool.h"
-#include "Scheduler.h"
-#include "ThreadPool.h"
-#include "Updater.h"
-#include "Window.h"
+#include "Broadcast.hpp"
+#include "Game.hpp"
+#include "Pool.hpp"
+#include "Scheduler.hpp"
+#include "ThreadPool.hpp"
+#include "Updater.hpp"
+#include "Window.hpp"
 
 using Scheduler = Core::Scheduler<time_base>;
 

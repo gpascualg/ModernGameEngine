@@ -1,6 +1,6 @@
-#include "Updater.h"
+#include "Updater.hpp"
 
-#include "ThreadPool.h"
+#include "ThreadPool.hpp"
 
 namespace Core {
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core.h"
-#include "counter.h"
+#include "core.hpp"
+#include "counter.hpp"
 
 #include <functional>
 #include <map>
@@ -139,7 +139,7 @@ public:
     {
         uintptr_t id = (uintptr_t)cl;
         uintptr_t sid = (uintptr_t)(void*&)method;
-        
+
         auto it = implementations.begin();
         if ((it = implementations.find(id)) != implementations.end())
         {

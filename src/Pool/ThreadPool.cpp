@@ -1,9 +1,9 @@
-#include "ThreadPool.h"
+#include "ThreadPool.hpp"
 
-#include "WorkerThread.h"
-#include "TaskWorker.h"
-#include "PermaWorker.h"
-#include "TaskWrapper.h"
+#include "WorkerThread.hpp"
+#include "TaskWorker.hpp"
+#include "PermaWorker.hpp"
+#include "TaskWrapper.hpp"
 
 
 namespace Pool {
@@ -30,7 +30,7 @@ namespace Pool {
             assert(worker->_stop && !worker->_busy);
 
             delete worker;
-        }   
+        }
     }
 
     Future ThreadPool::enqueue(Function&& function, void* argument)
@@ -38,7 +38,7 @@ namespace Pool {
         Task task(function);
         Future future = task.get_future();
         _queue.enqueue(_token, new TaskWrapper(task, argument));
-        
+
         return future;
     }
 
@@ -62,6 +62,6 @@ namespace Pool {
         for (WorkerThread* worker : _workers)
         {
             worker->_thread.join();
-        }   
+        }
     }
 }

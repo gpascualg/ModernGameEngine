@@ -1,7 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include "core.h"
+#include "core.hpp"
 
 class Counter {
 public:

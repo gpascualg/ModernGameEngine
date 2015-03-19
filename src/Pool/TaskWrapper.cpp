@@ -1,7 +1,7 @@
-#include "TaskWrapper.h"
+#include "TaskWrapper.hpp"
 
 namespace Pool {
-    
+
     TaskWrapper::TaskWrapper() {}
 
     TaskWrapper::TaskWrapper(Task& _task, void* _argument):

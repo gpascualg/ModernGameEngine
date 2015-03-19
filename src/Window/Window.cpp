@@ -1,5 +1,5 @@
-#include "Window.h"
-#include "Scheduler.h"
+#include "Window.hpp"
+#include "Scheduler.hpp"
 
 std::map<uintptr_t, Window*> Window::_windowToThis;
 

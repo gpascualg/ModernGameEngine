@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core.h"
-#include "Pool.h"
+#include "core.hpp"
+#include "Pool.hpp"
 
 namespace Pool {
 

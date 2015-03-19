@@ -10,8 +10,8 @@
 #include <vector>
 
 
-#include "core.h"
-#include "concurrentqueue.h"
+#include "core.hpp"
+#include "concurrentqueue.hpp"
 
 
 namespace Pool
@@ -30,5 +30,5 @@ namespace Pool
     using Function = std::function<int(void*)>;
     using Task = std::packaged_task<int(void*)>;
     using Future = std::future<int>;
-    
+
 };

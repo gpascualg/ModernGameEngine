@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Updater.h"
-#include "core.h"
+#include "Updater.hpp"
+#include "core.hpp"
 
 class Window;
 

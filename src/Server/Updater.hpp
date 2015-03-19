@@ -2,8 +2,8 @@
 
 #include <atomic>
 
-#include "concurrentqueue.h"
-#include "Pool.h"
+#include "concurrentqueue.hpp"
+#include "Pool.hpp"
 
 namespace Core
 {
@@ -11,7 +11,7 @@ namespace Core
 
     template <typename T>
     class Scheduler;
-    
+
     class Updater
     {
         template <typename T>
@@ -31,7 +31,7 @@ namespace Core
 
         virtual int update()
         {
-            
+
             return 0;
         }
 

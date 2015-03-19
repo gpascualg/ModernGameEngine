@@ -10,11 +10,11 @@
 
 project(lfs)
 
-file(GLOB_RECURSE sources_Game Game/*.cpp Game/*.h)
-file(GLOB_RECURSE sources_Pool Pool/*.cpp Pool/*.h)
-file(GLOB_RECURSE sources_Server Server/*.cpp Server/*.h)
-file(GLOB_RECURSE sources_Utils Utils/*.cpp Utils/*.h)
-file(GLOB_RECURSE sources_Window Window/*.cpp Window/*.h)
+file(GLOB_RECURSE sources_Game Game/*.cpp Game/*.hpp)
+file(GLOB_RECURSE sources_Pool Pool/*.cpp Pool/*.hpp)
+file(GLOB_RECURSE sources_Server Server/*.cpp Server/*.hpp)
+file(GLOB_RECURSE sources_Utils Utils/*.cpp Utils/*.hpp)
+file(GLOB_RECURSE sources_Window Window/*.cpp Window/*.hpp)
 
 set(EPS_SRCS
   ${EPS_SRCS}

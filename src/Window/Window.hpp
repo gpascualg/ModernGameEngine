@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core.h"
-#include "Broadcast.h"
+#include "core.hpp"
+#include "Broadcast.hpp"
 
 #include <functional>
 #include <map>

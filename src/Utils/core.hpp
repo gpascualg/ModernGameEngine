@@ -1,6 +1,6 @@
 #pragma once
 
-#include "platform_detect.h"
+#include "platform_detect.hpp"
 
 
 #if LFS_HAS_STDINT
@@ -31,7 +31,7 @@
 #include <functional>
 #include <future>
 #include <vector>
-#include "Broadcast.h"
+#include "Broadcast.hpp"
 using time_base = std::chrono::microseconds;
 
 #define signals public

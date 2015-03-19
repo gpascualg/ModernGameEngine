@@ -1,6 +1,6 @@
-#include "Scheduler.h"
+#include "Scheduler.hpp"
 
-#include "Updater.h"
+#include "Updater.hpp"
 
 namespace Core {
     template <typename T>

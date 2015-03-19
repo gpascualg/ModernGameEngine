@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Pool.h"
-#include "WorkerThread.h"
+#include "Pool.hpp"
+#include "WorkerThread.hpp"
 
 namespace Pool {
 
@@ -11,7 +11,7 @@ namespace Pool {
 
     private:
         PermaWorker(Function& function, void* argument);
-        
+
         virtual void _functor() override;
 
         Function _function;

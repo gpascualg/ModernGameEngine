@@ -7,8 +7,8 @@
 #include <queue>
 #include <thread>
 
-#include "core.h"
-#include "concurrentqueue.h"
+#include "core.hpp"
+#include "concurrentqueue.hpp"
 
 
 namespace Core {

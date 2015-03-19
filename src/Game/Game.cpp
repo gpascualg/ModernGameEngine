@@ -1,5 +1,5 @@
-#include "Game.h"
-#include "Window.h"
+#include "Game.hpp"
+#include "Window.hpp"
 
 Game::Game(Window* window) :
     Updater(),
