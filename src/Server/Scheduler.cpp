@@ -40,7 +40,7 @@ namespace Core {
         std::function<void(void)> fns[5];
         while ((dequeueCount = _singleExec.try_dequeue_bulk(fns, 5)) > 0)
         {
-            for (int i = 0; i < dequeueCount; ++i)
+            for (unsigned int i = 0; i < dequeueCount; ++i)
             {
                 fns[i]();
                 --dequeueCount;

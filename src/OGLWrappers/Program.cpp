@@ -1,5 +1,7 @@
 #include "Program.hpp"
-#include <GL/gl.h>
+
+#include "core.hpp"
+#include "log.hpp"
 
 #if defined(LFS_COMPILER_GCC)
     #include <fcntl.h>
@@ -63,8 +65,8 @@ GLuint Program::compile(GLenum type, std::string path)
     }
 
     int length = 0;
-    DWORD result = GetFileSize(hfile, (LPDWORD)&length);
-    if (result == INVALID_FILE_SIZE)
+    DWORD res = GetFileSize(hfile, (LPDWORD)&length);
+    if (res == INVALID_FILE_SIZE)
     {
         CloseHandle(hfile);
         return 0;
@@ -77,7 +79,7 @@ GLuint Program::compile(GLenum type, std::string path)
         return 0;
     }
 
-    const char* addr = static_cast<const char*>MapViewOfFile( map_handle, FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0 );
+    const char* addr = static_cast<const char*>(MapViewOfFile( map_handle, FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0 ));
     if(addr == NULL )
     {
         CloseHandle(map_handle);
@@ -110,7 +112,7 @@ GLuint Program::compile(GLenum type, std::string path)
         glGetShaderInfoLog(shader, length, &result, log);
 
         /* print an error message and the info log */
-        fprintf(stderr, "shaderCompileFromFile(): Unable to compile %s: %s\n", path.c_str(), log);
+        LOGD("shaderCompileFromFile(): Unable to compile %s: %s", path.c_str(), log);
         delete [] log;
 
         glDeleteShader(shader);
@@ -136,11 +138,13 @@ bool Program::link()
         glGetProgramInfoLog(_program, length, &result, log);
 
         /* print an error message and the info log */
-        fprintf(stderr, "sceneInit(): Program linking failed: %s\n", log);
+        LOGD("sceneInit(): Program linking failed: %s", log);
         delete [] log;
 
         /* delete the program */
         glDeleteProgram(_program);
         _program = 0;
     }
+
+    return _program != 0;
 }

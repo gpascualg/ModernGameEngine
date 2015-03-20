@@ -42,6 +42,8 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/dep/glew/include
 )
 
+add_definitions(-DGLEW_STATIC)
+
 add_executable(lfs
   ${EPS_SRCS}
 )
@@ -49,9 +51,17 @@ add_executable(lfs
 target_link_libraries(lfs
   ${THREAD_LIB}
   glfw
+  glew_s
   ${GLFW_LIBRARIES}
-  GLEW_static
 )
+
+add_custom_command(TARGET lfs 
+    COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:lfs>/resources)
+
+add_custom_command(TARGET lfs
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:lfs>/resources)
 
 #add_custom_target(resources
 #    COMMAND ${CMAKE_COMMAND} -E remove_directory
@@ -61,6 +71,6 @@ target_link_libraries(lfs
 #    COMMAND ${CMAKE_COMMAND} -E copy_directory
 #    ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:lfs>/resources)
 
-add_custom_command(TARGET lfs
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:lfs>/resources)
+#add_custom_command(TARGET lfs
+#    COMMAND ${CMAKE_COMMAND} -E create_symlink
+#    ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:lfs>/resources)

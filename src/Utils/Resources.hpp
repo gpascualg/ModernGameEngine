@@ -37,12 +37,12 @@ public:
     }
 
     template< typename ... Args >
-    static std::string getPath(Args const& ... parts)
+    static std::string getPath(const Args& ... parts)
     {
         std::ostringstream stream;
         stream << basePath;
-        using List= int[];
-        (void)List{0, ( (void)(stream << parts << SEP), 0 ) ... };
+
+        int dummy[sizeof...(Args)] = { (stream << parts << SEP, 0)... };
 
         auto str = stream.str();
         str.erase(str.end() - 1);

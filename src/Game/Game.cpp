@@ -21,6 +21,8 @@ void Game::initializeGL()
 {
     /* Create shaders */
     _program->attach(GL_VERTEX_SHADER, Resources::getPath("shaders", "vertex.glsl"));
+    //_program->bindAttributeLocation("vPosition", PROGRAM_VERTEX_ATTRIBUTE);
+    //_program->bindAttributeLocation("vColor", PROGRAM_COLOR_ATTRIBUTE);
     _program->link();
 
     /* Enable some gl constants */
