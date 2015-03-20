@@ -11,7 +11,9 @@ Window::Window(uint32_t width, uint32_t height, const char* title):
     if (!libraryInitialized)
     {
         if (!glfwInit())
+        {
             return;
+        }
     }
 
     _window = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -31,6 +33,16 @@ Window::Window(uint32_t width, uint32_t height, const char* title):
     glfwSetWindowSizeCallback(_window, _resizeHandler);
     glfwSetWindowRefreshCallback(_window, _refreshHandler);
     glfwSetCursorPosCallback(_window, _cursorPosHandler);
+
+    /* Init Glew */
+    if (!libraryInitialized)
+    {
+        if (glewInit())
+        {
+            return;
+        }
+        libraryInitialized = true;
+    }
 }
 
 void Window::mainloop(Scheduler* scheduler)

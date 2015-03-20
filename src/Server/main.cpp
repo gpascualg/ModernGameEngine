@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <GLFW/glfw3.h>
 
 #include "core.hpp"
 #include "counter.hpp"
+#include "log.hpp"
 
 #include "Broadcast.hpp"
 #include "Game.hpp"
 #include "Pool.hpp"
+#include "Resources.hpp"
 #include "Scheduler.hpp"
 #include "ThreadPool.hpp"
 #include "Updater.hpp"
@@ -20,7 +21,10 @@ Scheduler* scheduler = nullptr;
 
 Game* game = nullptr;
 
-int main() {
+
+int main(int argc, const char* argv[]) {
+    Resources::setup(argv[0], "resources");
+
     // Setup pool and scheduler
     threadPool = Pool::ThreadPool::create(1);
     scheduler = Scheduler::create(100);
@@ -38,12 +42,12 @@ int main() {
 
     window.mainloop(scheduler);
 
-    printf("[END] Stopping all threads\n");
+    LOGD("[END] Stopping all threads");
 
     threadPool->stop();
     threadPool->join();
 
-    printf("[END] Cleaning memory\n");
+    LOGD("[END] Cleaning memory");
 
     unbindAll();
 

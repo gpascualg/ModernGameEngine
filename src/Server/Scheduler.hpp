@@ -9,6 +9,7 @@
 
 #include "core.hpp"
 #include "concurrentqueue.hpp"
+#include "log.hpp"
 
 
 namespace Core {
@@ -77,7 +78,8 @@ namespace Core {
 
             _updateEvery = static_cast<double>(base) / ticksPerSecond,
 
-            printf("[DEBUG]\tTicksPerSecond = %d\n\tUpdateEvery = %3.3f (%0.5lfs)\n", _ticksPerSecond, _updateEvery, _updateEvery / base);
+            LOGD("TicksPerSecond = %d", _ticksPerSecond);
+            LOGD("UpdateEvery = %3.3f (%0.5lfs)", _updateEvery, _updateEvery / base);
         }
 
     private:

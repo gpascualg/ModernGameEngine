@@ -4,6 +4,7 @@
 #include "core.hpp"
 
 class Window;
+class Program;
 
 class Game : public Core::Updater
 {
@@ -19,6 +20,7 @@ public:
 
 private:
     Window* _window;
+    Program* _program;
 
     double xRot;
     double yRot;

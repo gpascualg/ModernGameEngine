@@ -1,12 +1,16 @@
 #include "Game.hpp"
 #include "Window.hpp"
+#include "Program.hpp"
+#include "Resources.hpp"
 
 Game::Game(Window* window) :
     Updater(),
     _window(window),
     xRot(0), yRot(0), zRot(0),
     lastX(0), lastY(0)
-{}
+{
+    _program = new Program();
+}
 
 int Game::update()
 {
@@ -15,6 +19,10 @@ int Game::update()
 
 void Game::initializeGL()
 {
+    /* Create shaders */
+    _program->attach(GL_VERTEX_SHADER, Resources::getPath("shaders", "vertex.glsl"));
+    _program->link();
+
     /* Enable some gl constants */
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);

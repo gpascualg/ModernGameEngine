@@ -37,6 +37,7 @@ using time_base = std::chrono::microseconds;
 #define signals public
 #define SIGNAL {}
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #ifdef _MSC_VER
 #undef APIENTRY
