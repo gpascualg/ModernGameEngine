@@ -13,6 +13,7 @@ public:
     }
 
     bool attach(GLenum type, std::string path);
+    bool bindAttributeLocation(const char* location, GLenum type);
     bool link();
 
 private:

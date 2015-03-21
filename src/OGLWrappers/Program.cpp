@@ -64,9 +64,8 @@ GLuint Program::compile(GLenum type, std::string path)
         return 0;
     }
 
-    int length = 0;
-    DWORD res = GetFileSize(hfile, (LPDWORD)&length);
-    if (res == INVALID_FILE_SIZE)
+    int length = GetFileSize(hfile, NULL);
+    if (length == INVALID_FILE_SIZE)
     {
         CloseHandle(hfile);
         return 0;
@@ -87,7 +86,6 @@ GLuint Program::compile(GLenum type, std::string path)
         return 0;
     }
 #endif
-
 
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, (const char **)&addr, &length);
@@ -112,7 +110,7 @@ GLuint Program::compile(GLenum type, std::string path)
         glGetShaderInfoLog(shader, length, &result, log);
 
         /* print an error message and the info log */
-        LOGD("shaderCompileFromFile(): Unable to compile %s: %s", path.c_str(), log);
+        LOGD("Unable to compile %s: %s", path.c_str(), log);
         delete [] log;
 
         glDeleteShader(shader);
@@ -120,6 +118,11 @@ GLuint Program::compile(GLenum type, std::string path)
     }
 
     return shader;
+}
+
+bool Program::bindAttributeLocation(const char* location, GLenum type)
+{
+    return true;
 }
 
 bool Program::link()
@@ -138,7 +141,7 @@ bool Program::link()
         glGetProgramInfoLog(_program, length, &result, log);
 
         /* print an error message and the info log */
-        LOGD("sceneInit(): Program linking failed: %s", log);
+        LOGD("Program linking failed: %s", log);
         delete [] log;
 
         /* delete the program */
