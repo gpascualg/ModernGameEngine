@@ -81,6 +81,11 @@ set (version ${GLEW_VERSION})
 set (libname ${GLEW_LIB_NAME})
 set (cflags)
 set (requireslib glu)
+
+if (UNIX)
+    set(CMAKE_CURRENT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
 configure_file (${GLEW_DIR}/glew.pc.in ${CMAKE_CURRENT_BUILD_DIR}/glew.pc @ONLY)
 set (cflags "-DGLEW_MX")
 set (libname ${GLEW_LIB_NAME}mx)
