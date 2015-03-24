@@ -23,6 +23,10 @@ Game* game = nullptr;
 
 
 int main(int argc, const char* argv[]) {
+#if defined(LFS_COMPILER_MSVC) && defined(NDEBUG)
+    FreeConsole();
+#endif
+
     Resources::setup(argv[0], "resources");
 
     // Setup pool and scheduler

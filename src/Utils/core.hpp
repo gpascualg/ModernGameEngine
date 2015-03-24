@@ -2,7 +2,6 @@
 
 #include "platform_detect.hpp"
 
-
 #if LFS_HAS_STDINT
     #include <stdint.h>
 #else
@@ -17,15 +16,8 @@
     #error Unsupported platform!
 #endif
 
-// Windows defines
-#ifdef min
-    #undef min
-#endif
 
-#ifdef max
-    #undef max
-#endif
-
+// Basic system-wide includes
 #include <iostream>
 #include <chrono>
 #include <functional>
@@ -34,9 +26,14 @@
 #include "Broadcast.hpp"
 using time_base = std::chrono::microseconds;
 
-#define signals public
-#define SIGNAL {}
 
+// Signal related defines
+static volatile uint64_t signal_no_optimize = 0;
+#define signals         public
+#define SIGNAL(x)       void x { signal_no_optimize = __LINE__; }
+
+
+// Include GLFW and GLEW
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #ifdef _MSC_VER
@@ -46,14 +43,28 @@ using time_base = std::chrono::microseconds;
 #include <GLFW/glfw3native.h>
 #endif
 
-#include <glm/glm.hpp>
 
+// Math library
+#include <glm/glm.hpp>
 using point4 = glm::vec4;
 using color4 = glm::vec4;
 
+
+// Windows specifics
 #ifdef LFS_COMPILER_MSVC
+    // Undef Windows imposed defines
+    #ifdef min
+        #undef min
+    #endif
+
+    #ifdef max
+        #undef max
+    #endif
+
+    // Assert alignments
     static_assert(sizeof(glm::vec3) == sizeof(GLfloat)* 3, "Compiler is not aligning glm::vec3 correctly.");
     static_assert(sizeof(glm::vec4) == sizeof(GLfloat)* 4, "Compiler is not aligning glm::vec4 correctly.");    
 
+    // Disable alignment warning
     #pragma warning(disable: 4316)
 #endif

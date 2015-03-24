@@ -57,12 +57,13 @@ void Cube::initialize()
 
 void Cube::draw()
 {
+    // TODO: program->bind();
     glBindBuffer(GL_ARRAY_BUFFER, _buffers);
     
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0); // TODO: Use program->attributeLocation("vPosition");
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(points));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(points)); // TODO: Use program->attributeLocation("vColor");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //GL_LINE
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);

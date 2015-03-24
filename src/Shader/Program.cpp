@@ -21,7 +21,7 @@ namespace Shader
         _program = glCreateProgram();
     }
 
-    bool Program::attach(GLenum type, std::string path)
+    GLuint Program::attach(GLenum type, std::string path)
     {
         GLuint shader = compile(type, path.c_str());
         if (shader != 0) {
@@ -34,7 +34,7 @@ namespace Shader
             glDeleteShader(shader);
         }
 
-        return shader != 0;
+        return shader;
     }
 
     GLuint Program::compile(GLenum type, std::string path)
@@ -123,10 +123,16 @@ namespace Shader
         return shader;
     }
 
-    bool Program::bindAttribute(const char* location, GLenum type)
+    bool Program::bindAttribute(const char* attrib, GLuint index)
     {
-        _attribs.insert(std::make_pair(location, type));
+        _attribs.insert(std::make_pair(attrib, index));
+        glBindAttribLocation(_program, index, attrib);
         return true;
+    }
+
+    GLuint Program::attributeLocation(const char* attrib)
+    {
+        return _attribs[attrib];
     }
 
     bool Program::link()

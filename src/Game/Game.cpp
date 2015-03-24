@@ -34,8 +34,8 @@ void Game::initializeGL()
     _program->attach(GL_VERTEX_SHADER, Resources::getPath("shaders", "vertex.glsl"));
     _program->attach(GL_FRAGMENT_SHADER, Resources::getPath("shaders", "fragment.glsl"));
 
-    glBindAttribLocation(**_program, 0, "vPosition");
-    glBindAttribLocation(**_program, 1, "vColor");
+    _program->bindAttribute("vPosition", 0);
+    _program->bindAttribute("vColor", 1);
     
     _program->link();
     _program->bind();

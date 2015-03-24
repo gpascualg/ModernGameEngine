@@ -15,8 +15,9 @@ namespace Shader
             return this->_program;
         }
 
-        bool attach(GLenum type, std::string path);
-        bool bindAttribute(const char* location, GLenum type);
+        GLuint attach(GLenum type, std::string path);
+        bool bindAttribute(const char* attrib, GLuint index);
+        GLuint attributeLocation(const char* attrib);
         bool link();
         bool bind();
 

@@ -11,5 +11,5 @@ public:
     virtual int update() override;
 
 signals:
-    void tick() SIGNAL;
+    SIGNAL(tick());
 };

@@ -3,7 +3,7 @@
 
 std::map<uintptr_t, Window*> Window::_windowToThis;
 
-Window::Window(uint32_t width, uint32_t height, const char* title):
+Window::Window(uint32_t width, uint32_t height, const char* title) :
     _window(nullptr),
     _update(false)
 {
@@ -56,6 +56,7 @@ void Window::mainloop(Scheduler* scheduler)
     _scheduler = scheduler;
 
     // Emit initializeGL
+    std::cout << "ONCE" << std::endl;
     emit(this, &Window::initializeGL);
 
     // Emit resize

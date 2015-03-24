@@ -36,10 +36,10 @@ public:
     }
 
 signals:
-    void initializeGL() SIGNAL;
-    void draw() SIGNAL;
-    void resize(int, int) SIGNAL;
-    void mousemove(double, double, uint8_t) SIGNAL;
+    SIGNAL(initializeGL());
+    SIGNAL(draw());
+    SIGNAL(resize(int, int));
+    SIGNAL(mousemove(double, double, uint8_t));
 
 private:
     static void _resizeHandler(GLFWwindow* w, int width, int height);
