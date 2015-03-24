@@ -36,15 +36,8 @@ void Game::initializeGL()
 
     glBindAttribLocation(**_program, 0, "vPosition");
     glBindAttribLocation(**_program, 1, "vColor");
-
-    LOGD("glGetError(): %d", glGetError());
-    LOGD("Program: %d", **_program);
-
+    
     _program->link();
-
-    LOGD("vPosition: %d", glGetAttribLocation(**_program, "vPosition"));
-    LOGD("vColor: %d", glGetAttribLocation(**_program, "vColor"));
-
     _program->bind();
 
     /* Clear color */

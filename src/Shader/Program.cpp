@@ -123,8 +123,9 @@ namespace Shader
         return shader;
     }
 
-    bool Program::bindAttributeLocation(const char* location, GLenum type)
+    bool Program::bindAttribute(const char* location, GLenum type)
     {
+        _attribs.insert(std::make_pair(location, type));
         return true;
     }
 

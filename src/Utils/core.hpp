@@ -50,3 +50,10 @@ using time_base = std::chrono::microseconds;
 
 using point4 = glm::vec4;
 using color4 = glm::vec4;
+
+#ifdef LFS_COMPILER_MSVC
+    static_assert(sizeof(glm::vec3) == sizeof(GLfloat)* 3, "Compiler is not aligning glm::vec3 correctly.");
+    static_assert(sizeof(glm::vec4) == sizeof(GLfloat)* 4, "Compiler is not aligning glm::vec4 correctly.");    
+
+    #pragma warning(disable: 4316)
+#endif

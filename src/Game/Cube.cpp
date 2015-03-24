@@ -1,6 +1,5 @@
 #include "Cube.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
 
 Cube::Cube(const uint32_t id) :
     Object(id)
@@ -59,9 +58,7 @@ void Cube::initialize()
 void Cube::draw()
 {
     glBindBuffer(GL_ARRAY_BUFFER, _buffers);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-
+    
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(1);
@@ -69,8 +66,6 @@ void Cube::draw()
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //GL_LINE
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

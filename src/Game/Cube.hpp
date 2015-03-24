@@ -3,8 +3,9 @@
 #include "core.hpp"
 #include "Object.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
 
-const int NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
+const int NumVertices = 36;
 
 class Cube : public Object
 {

@@ -18,10 +18,10 @@ public:
 
     virtual int update() override;
 
-    void initializeGL();
-    void onResize(int width, int height);
-    void onMouseMove(double x, double y, uint8_t mouse);
-    void draw();
+    virtual void initializeGL();
+    virtual void onResize(int width, int height);
+    virtual void onMouseMove(double x, double y, uint8_t mouse);
+    virtual void draw();
 
 private:
     Window* _window;
