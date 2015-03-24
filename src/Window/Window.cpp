@@ -56,7 +56,6 @@ void Window::mainloop(Scheduler* scheduler)
     _scheduler = scheduler;
 
     // Emit initializeGL
-    std::cout << "ONCE" << std::endl;
     emit(this, &Window::initializeGL);
 
     // Emit resize

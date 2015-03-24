@@ -104,11 +104,16 @@ class Broadcast
 public:
     ~Broadcast()
     {
+        // TODO: We may perfectly be double deleting (see unbindAll)
+        // Story behind is that statically created classes' destructors should be called on
+        // local namespace destruction, as in main end
+        /*
         auto it = implementations.begin();
         for (; it != implementations.end(); ++it)
         {
             delete it->second;
         }
+        */
     }
 
     template <class Class, class Callee>
