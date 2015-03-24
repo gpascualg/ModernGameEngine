@@ -1,99 +1,12 @@
+
 #include "Game.hpp"
 
+#include "Cube.hpp"
 #include "Object.hpp"
 #include "Program.hpp"
 #include "Resources.hpp"
 #include "Window.hpp"
 
-
-GLfloat colors[6][4] = {
-    { 0.0f, 1.0f, 0.0f, 1.0f },	// Color Blue
-    { 1.0f, 0.5f, 0.0f, 1.0f },	// Color Orange
-    { 1.0f, 0.0f, 0.0f, 1.0f },	// Color Red
-    { 1.0f, 1.0f, 0.0f, 1.0f },	// Color Yellow
-    { 0.0f, 0.0f, 1.0f, 1.0f },	// Color Blue
-    { 1.0f, 0.0f, 1.0f, 1.0f }	// Color Violet
-};
-
-GLfloat points[4 * 6][4] = {
-    { 1.0f, 1.0f, -1.0f, 1.0f },
-    { -1.0f, 1.0f, -1.0f, 1.0f },
-    { -1.0f, 1.0f, 1.0f, 1.0f },
-    { 1.0f, 1.0f, 1.0f, 1.0f },
-
-    { 1.0f, -1.0f, 1.0f, 1.0f },
-    { -1.0f, -1.0f, 1.0f, 1.0f },
-    { -1.0f, -1.0f, -1.0f, 1.0f },
-    { 1.0f, -1.0f, -1.0f, 1.0f },
-
-    { 1.0f, 1.0f, 1.0f, 1.0f },
-    { -1.0f, 1.0f, 1.0f, 1.0f },
-    { -1.0f, -1.0f, 1.0f, 1.0f },
-    { 1.0f, -1.0f, 1.0f, 1.0f },
-
-    { 1.0f, -1.0f, -1.0f, 1.0f },
-    { -1.0f, -1.0f, -1.0f, 1.0f },
-    { -1.0f, 1.0f, -1.0f, 1.0f },
-    { 1.0f, 1.0f, -1.0f, 1.0f },
-
-    { -1.0f, 1.0f, 1.0f, 1.0f },
-    { -1.0f, 1.0f, -1.0f, 1.0f },
-    { -1.0f, -1.0f, -1.0f, 1.0f },
-    { -1.0f, -1.0f, 1.0f, 1.0f },
-
-    { 1.0f, 1.0f, -1.0f, 1.0f },
-    { 1.0f, 1.0f, 1.0f, 1.0f },
-    { 1.0f, -1.0f, 1.0f, 1.0f },
-    { 1.0f, -1.0f, -1.0f, 1.0f },
-};
-
-class Cube : public Object
-{
-public:
-    Cube(const uint32_t id) :
-        Object(id)
-    {}
-
-    void initialize(Shader::Program* program) override
-    {
-        _program = program;
-
-        glGenBuffers(1, &_buffers);
-        glBindBuffer(GL_ARRAY_BUFFER, _buffers);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(points)+sizeof(colors), NULL, GL_STATIC_DRAW);
-
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors);
-        
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        
-        glEnable(GL_DEPTH_TEST);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
-    void draw() override
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, _buffers);
-        
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        glVertexPointer(4, GL_FLOAT, 0, 0);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(GLfloat) * 4 * 4 * 6));
-        
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawArrays(GL_QUADS, 0, 4*6);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-        
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
-private:
-    Shader::Program* _program;
-    GLuint _buffers;
-};
 
 Game::Game(Window* window) :
     Updater(),
@@ -103,7 +16,7 @@ Game::Game(Window* window) :
 {
     _program = new Shader::Program();
     _cube = new Cube(0);
-    _cube->initialize(_program);
+    _cube->initialize();
 }
 
 int Game::update()
@@ -124,12 +37,22 @@ void Game::initializeGL()
     glBindAttribLocation(**_program, 0, "vPosition");
     glBindAttribLocation(**_program, 1, "vColor");
 
+    LOGD("glGetError(): %d", glGetError());
+    LOGD("Program: %d", **_program);
+
     _program->link();
+
+    LOGD("vPosition: %d", glGetAttribLocation(**_program, "vPosition"));
+    LOGD("vColor: %d", glGetAttribLocation(**_program, "vColor"));
+
     _program->bind();
 
     /* Clear color */
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    /* Update (UNIX won't render unless called, windows does) */
+    _window->update();
 }
 
 void Game::onResize(int width, int height)
@@ -165,22 +88,20 @@ void Game::onMouseMove(double x, double y, uint8_t mouse)
     while (zRot > 360)
         zRot -= 180;
 
+    if (mouse)
+    {
+        ((Cube*)_cube)->rotate({1.0f, 0.0f, 0.0f}, xRot / 1800.0f);
+        ((Cube*)_cube)->rotate({0.0f, 0.0f, 1.0f}, zRot / 1800.0f);
+        _window->update();
+    }
+
     lastX = x;
     lastY = y;
-
-    _window->update();
 }
 
 void Game::draw()
 {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glLoadIdentity();
-    glTranslatef(0.0, 0.0, -10.0);
-    glRotatef((GLfloat)xRot, 1.0, 0.0, 0.0);
-    glRotatef((GLfloat)yRot, 0.0, 1.0, 0.0);
-    glRotatef((GLfloat)zRot, 0.0, 0.0, 1.0);
-
     _cube->draw();
 }

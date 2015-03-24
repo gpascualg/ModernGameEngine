@@ -45,3 +45,8 @@ using time_base = std::chrono::microseconds;
 #define GLFW_EXPOSE_NATIVE_WGL
 #include <GLFW/glfw3native.h>
 #endif
+
+#include <glm/glm.hpp>
+
+using point4 = glm::vec4;
+using color4 = glm::vec4;

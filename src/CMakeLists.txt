@@ -40,6 +40,7 @@ include_directories(
 
   ${CMAKE_SOURCE_DIR}/dep/glfw/include
   ${CMAKE_SOURCE_DIR}/dep/glew/include
+  ${CMAKE_SOURCE_DIR}/dep/glm
 )
 
 add_definitions(-DGLEW_STATIC)
@@ -55,13 +56,13 @@ target_link_libraries(lfs
   ${GLFW_LIBRARIES}
 )
 
-add_custom_command(TARGET lfs 
-    COMMAND ${CMAKE_COMMAND} -E remove_directory
-    $<TARGET_FILE_DIR:lfs>/resources)
+#add_custom_command(TARGET lfs
+#    COMMAND ${CMAKE_COMMAND} -E remove_directory
+#    $<TARGET_FILE_DIR:lfs>/resources)
 
-add_custom_command(TARGET lfs
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:lfs>/resources)
+#add_custom_command(TARGET lfs
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory
+#    ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:lfs>/resources)
 
 #add_custom_target(resources
 #    COMMAND ${CMAKE_COMMAND} -E remove_directory
