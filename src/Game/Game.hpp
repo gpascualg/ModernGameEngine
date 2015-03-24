@@ -4,7 +4,12 @@
 #include "core.hpp"
 
 class Window;
-class Program;
+class Object;
+
+namespace Shader
+{
+    class Program;
+}
 
 class Game : public Core::Updater
 {
@@ -20,7 +25,9 @@ public:
 
 private:
     Window* _window;
-    Program* _program;
+    Shader::Program* _program;
+
+    Object* _cube;
 
     double xRot;
     double yRot;

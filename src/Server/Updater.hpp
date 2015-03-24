@@ -31,7 +31,6 @@ namespace Core
 
         virtual int update()
         {
-
             return 0;
         }
 

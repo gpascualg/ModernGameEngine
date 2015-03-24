@@ -1,7 +1,99 @@
 #include "Game.hpp"
-#include "Window.hpp"
+
+#include "Object.hpp"
 #include "Program.hpp"
 #include "Resources.hpp"
+#include "Window.hpp"
+
+
+GLfloat colors[6][4] = {
+    { 0.0f, 1.0f, 0.0f, 1.0f },	// Color Blue
+    { 1.0f, 0.5f, 0.0f, 1.0f },	// Color Orange
+    { 1.0f, 0.0f, 0.0f, 1.0f },	// Color Red
+    { 1.0f, 1.0f, 0.0f, 1.0f },	// Color Yellow
+    { 0.0f, 0.0f, 1.0f, 1.0f },	// Color Blue
+    { 1.0f, 0.0f, 1.0f, 1.0f }	// Color Violet
+};
+
+GLfloat points[4 * 6][4] = {
+    { 1.0f, 1.0f, -1.0f, 1.0f },
+    { -1.0f, 1.0f, -1.0f, 1.0f },
+    { -1.0f, 1.0f, 1.0f, 1.0f },
+    { 1.0f, 1.0f, 1.0f, 1.0f },
+
+    { 1.0f, -1.0f, 1.0f, 1.0f },
+    { -1.0f, -1.0f, 1.0f, 1.0f },
+    { -1.0f, -1.0f, -1.0f, 1.0f },
+    { 1.0f, -1.0f, -1.0f, 1.0f },
+
+    { 1.0f, 1.0f, 1.0f, 1.0f },
+    { -1.0f, 1.0f, 1.0f, 1.0f },
+    { -1.0f, -1.0f, 1.0f, 1.0f },
+    { 1.0f, -1.0f, 1.0f, 1.0f },
+
+    { 1.0f, -1.0f, -1.0f, 1.0f },
+    { -1.0f, -1.0f, -1.0f, 1.0f },
+    { -1.0f, 1.0f, -1.0f, 1.0f },
+    { 1.0f, 1.0f, -1.0f, 1.0f },
+
+    { -1.0f, 1.0f, 1.0f, 1.0f },
+    { -1.0f, 1.0f, -1.0f, 1.0f },
+    { -1.0f, -1.0f, -1.0f, 1.0f },
+    { -1.0f, -1.0f, 1.0f, 1.0f },
+
+    { 1.0f, 1.0f, -1.0f, 1.0f },
+    { 1.0f, 1.0f, 1.0f, 1.0f },
+    { 1.0f, -1.0f, 1.0f, 1.0f },
+    { 1.0f, -1.0f, -1.0f, 1.0f },
+};
+
+class Cube : public Object
+{
+public:
+    Cube(const uint32_t id) :
+        Object(id)
+    {}
+
+    void initialize(Shader::Program* program) override
+    {
+        _program = program;
+
+        glGenBuffers(1, &_buffers);
+        glBindBuffer(GL_ARRAY_BUFFER, _buffers);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(points)+sizeof(colors), NULL, GL_STATIC_DRAW);
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors);
+        
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        
+        glEnable(GL_DEPTH_TEST);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    void draw() override
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, _buffers);
+        
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        glVertexPointer(4, GL_FLOAT, 0, 0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(GLfloat) * 4 * 4 * 6));
+        
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawArrays(GL_QUADS, 0, 4*6);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+private:
+    Shader::Program* _program;
+    GLuint _buffers;
+};
 
 Game::Game(Window* window) :
     Updater(),
@@ -9,7 +101,9 @@ Game::Game(Window* window) :
     xRot(0), yRot(0), zRot(0),
     lastX(0), lastY(0)
 {
-    _program = new Program();
+    _program = new Shader::Program();
+    _cube = new Cube(0);
+    _cube->initialize(_program);
 }
 
 int Game::update()
@@ -19,15 +113,19 @@ int Game::update()
 
 void Game::initializeGL()
 {
-    /* Create shaders */
-    _program->attach(GL_VERTEX_SHADER, Resources::getPath("shaders", "vertex.glsl"));
-    //_program->bindAttributeLocation("vPosition", PROGRAM_VERTEX_ATTRIBUTE);
-    //_program->bindAttributeLocation("vColor", PROGRAM_COLOR_ATTRIBUTE);
-    _program->link();
-
     /* Enable some gl constants */
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+
+    /* Create shaders */
+    _program->attach(GL_VERTEX_SHADER, Resources::getPath("shaders", "vertex.glsl"));
+    _program->attach(GL_FRAGMENT_SHADER, Resources::getPath("shaders", "fragment.glsl"));
+
+    glBindAttribLocation(**_program, 0, "vPosition");
+    glBindAttribLocation(**_program, 1, "vColor");
+
+    _program->link();
+    _program->bind();
 
     /* Clear color */
     glClearColor(0, 0, 0, 1);
@@ -84,47 +182,5 @@ void Game::draw()
     glRotatef((GLfloat)yRot, 0.0, 1.0, 0.0);
     glRotatef((GLfloat)zRot, 0.0, 0.0, 1.0);
 
-    glPushMatrix();
-
-    /*      Posa el color a vermell */
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glTranslatef(-0.5, -0.5, -0.5);
-
-    /*      Crea un cub de  a x h x p */
-    glScalef((GLfloat)1, (GLfloat)1, (GLfloat)1);
-    glPopMatrix();
-    glPushMatrix();
-    glBegin(GL_QUADS);		// Draw The Cube Using quads
-        glColor3f(0.0f, 1.0f, 0.0f);	// Color Blue
-        glVertex3f(1.0f, 1.0f, -1.0f);	// Top Right Of The Quad (Top)
-        glVertex3f(-1.0f, 1.0f, -1.0f);	// Top Left Of The Quad (Top)
-        glVertex3f(-1.0f, 1.0f, 1.0f);	// Bottom Left Of The Quad (Top)
-        glVertex3f(1.0f, 1.0f, 1.0f);	// Bottom Right Of The Quad (Top)
-        glColor3f(1.0f, 0.5f, 0.0f);	// Color Orange
-        glVertex3f(1.0f, -1.0f, 1.0f);	// Top Right Of The Quad (Bottom)
-        glVertex3f(-1.0f, -1.0f, 1.0f);	// Top Left Of The Quad (Bottom)
-        glVertex3f(-1.0f, -1.0f, -1.0f);// Bottom Left Of The Quad (Bottom)
-        glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Right Of The Quad (Bottom)
-        glColor3f(1.0f, 0.0f, 0.0f);	// Color Red
-        glVertex3f(1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Front)
-        glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Front)
-        glVertex3f(-1.0f, -1.0f, 1.0f);	// Bottom Left Of The Quad (Front)
-        glVertex3f(1.0f, -1.0f, 1.0f);	// Bottom Right Of The Quad (Front)
-        glColor3f(1.0f, 1.0f, 0.0f);	// Color Yellow
-        glVertex3f(1.0f, -1.0f, -1.0f);	// Top Right Of The Quad (Back)
-        glVertex3f(-1.0f, -1.0f, -1.0f);// Top Left Of The Quad (Back)
-        glVertex3f(-1.0f, 1.0f, -1.0f);	// Bottom Left Of The Quad (Back)
-        glVertex3f(1.0f, 1.0f, -1.0f);	// Bottom Right Of The Quad (Back)
-        glColor3f(0.0f, 0.0f, 1.0f);	// Color Blue
-        glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Left)
-        glVertex3f(-1.0f, 1.0f, -1.0f);	// Top Left Of The Quad (Left)
-        glVertex3f(-1.0f, -1.0f, -1.0f);// Bottom Left Of The Quad (Left)
-        glVertex3f(-1.0f, -1.0f, 1.0f);	// Bottom Right Of The Quad (Left)
-        glColor3f(1.0f, 0.0f, 1.0f);	// Color Violet
-        glVertex3f(1.0f, 1.0f, -1.0f);	// Top Right Of The Quad (Right)
-        glVertex3f(1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Right)
-        glVertex3f(1.0f, -1.0f, 1.0f);	// Bottom Left Of The Quad (Right)
-        glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Right Of The Quad (Right)
-    glEnd();			// End Drawing The Cube
-    glPopMatrix();
+    _cube->draw();
 }
