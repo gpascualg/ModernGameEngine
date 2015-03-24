@@ -67,7 +67,7 @@ void Cube::draw()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(points));
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //GL_LINE
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 
     glDisableClientState(GL_VERTEX_ARRAY);

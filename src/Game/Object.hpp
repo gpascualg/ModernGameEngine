@@ -6,10 +6,18 @@ class Object
 {
 public:
     Object(const uint32_t id);
+    virtual ~Object();
 
     virtual void initialize() = 0;
     virtual void draw() = 0;
 
+    inline uint32_t getID();
+
 private:
     uint32_t _id;
 };
+
+uint32_t Object::getID()
+{
+    return _id;
+}

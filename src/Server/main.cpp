@@ -27,7 +27,7 @@ int main(int argc, const char* argv[]) {
 
     // Setup pool and scheduler
     threadPool = Pool::ThreadPool::create(1);
-    scheduler = Scheduler::create(100);
+    scheduler = Scheduler::create(60);
 
     // Setup window and scene
     Window window(640, 480, "CubGPU");
