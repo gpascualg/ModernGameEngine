@@ -15,6 +15,7 @@ class Game : public Core::Updater
 {
 public:
     Game(Window* window);
+    virtual ~Game();
 
     virtual int update() override;
 

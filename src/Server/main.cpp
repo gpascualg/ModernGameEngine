@@ -36,7 +36,7 @@ int main(int argc, const char* argv[]) {
     // Setup window and scene
     Window window(640, 480, "CubGPU");
     game = new Game(&window);
-    scheduler->every(50, game);
+    scheduler->every(1, game);
 
     // Setup signal bindings
     bind(&window, &Window::initializeGL, game, &Game::initializeGL);
@@ -44,6 +44,7 @@ int main(int argc, const char* argv[]) {
     bind(&window, &Window::resize, game, &Game::onResize);
     bind(&window, &Window::mousemove, game, &Game::onMouseMove);
 
+    // Enter the main loop
     window.mainloop(scheduler);
 
     LOGD("[END] Stopping all threads");
@@ -53,11 +54,16 @@ int main(int argc, const char* argv[]) {
 
     LOGD("[END] Cleaning memory");
 
+    // Clean GLFW
+    glfwTerminate();
+
+    // Unbind all callbacks (bind/emit)
     unbindAll();
 
-    delete game;
+    // Delete all allocated memory
     delete scheduler;
     delete threadPool;
+    delete game;
 
     return 0;
 }

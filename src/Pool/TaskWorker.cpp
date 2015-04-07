@@ -25,7 +25,10 @@ namespace Pool {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
-            if (this->_stop) return;
+            if (this->_stop)
+            {
+                break;
+            }
 
             this->_busy = true;
             for (size_t i = 0; i < dequeueCount; ++i)

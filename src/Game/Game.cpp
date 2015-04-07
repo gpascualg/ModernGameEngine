@@ -19,6 +19,12 @@ Game::Game(Window* window) :
     _cube->initialize();
 }
 
+Game::~Game()
+{
+    delete _cube;
+    delete _program;
+}
+
 int Game::update()
 {
     return Updater::update();
