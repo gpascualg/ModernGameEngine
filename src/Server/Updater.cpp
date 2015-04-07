@@ -1,12 +1,21 @@
 #include "Updater.hpp"
 
-#include "ThreadPool.hpp"
-
 namespace Core {
 
-    Pool::Future Updater::addToPool()
+    Updater::Updater()
+    {}
+
+    Updater::~Updater()
+    {}
+
+    int Updater::update()
     {
-        return Pool::ThreadPool::get()->enqueue(Pool::Function(entry_point), this);
+        return 0;
+    }
+
+    int Updater::entry_point(void* me)
+    {
+        return static_cast<Updater*>(me)->update();
     }
 
 }

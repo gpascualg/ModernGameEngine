@@ -12,21 +12,8 @@ namespace Pool {
         ThreadPool(int nThreads, int bulkDequeue);
 
     public:
-        static ThreadPool* create(int nThreads, int bulkDequeue = 5)
-        {
-            if (!_instance)
-            {
-                _instance = new ThreadPool(nThreads, bulkDequeue);
-            }
-
-            return get();
-        }
-
-        static ThreadPool* get()
-        {
-            assert(_instance && "No ThreadPool exists");
-            return _instance;
-        }
+        static LFS_INLINE ThreadPool* create(int nThreads, int bulkDequeue = 5);
+        static LFS_INLINE ThreadPool* get();
 
         ~ThreadPool();
 
@@ -46,5 +33,24 @@ namespace Pool {
         Queue _queue;
         ProducerToken _token;
     };
+
+
+    // INLINE METHODS
+
+    ThreadPool* ThreadPool::create(int nThreads, int bulkDequeue)
+    {
+        if (!_instance)
+        {
+            _instance = new ThreadPool(nThreads, bulkDequeue);
+        }
+
+        return get();
+    }
+
+    ThreadPool* ThreadPool::get()
+    {
+        assert(_instance && "No ThreadPool exists");
+        return _instance;
+    }
 
 }

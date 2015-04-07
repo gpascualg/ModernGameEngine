@@ -179,7 +179,7 @@ void emit(Class* cl, void (Class::*method)(Parameters...),
     Broadcast<Parameters...>::emit(cl, method, args...);
 }
 
-inline void unbindAll()
+LFS_INLINE void unbindAll()
 {
     CleanBroadcast::unbindAll();
 }

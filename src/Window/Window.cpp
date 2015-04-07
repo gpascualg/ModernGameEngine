@@ -45,15 +45,15 @@ Window::Window(uint32_t width, uint32_t height, const char* title) :
     }
 }
 
-void Window::mainloop(Scheduler* scheduler)
+void Window::mainloop()
 {
-    if (!_window || !scheduler)
+    if (!_window)
     {
         return;
     }
 
     // Save scheduler
-    _scheduler = scheduler;
+    Scheduler* scheduler = Scheduler::get();
 
     // Emit initializeGL
     emit(this, &Window::initializeGL);
@@ -67,7 +67,7 @@ void Window::mainloop(Scheduler* scheduler)
     while (!glfwWindowShouldClose(_window))
     {
         /* Update scheduler */
-        _scheduler->update();
+        scheduler->update();
 
         if (_update)
         {
@@ -87,7 +87,7 @@ void Window::_resizeHandler(GLFWwindow* w, int width, int height)
 {
     // We can not immediately emit, it must be scheduled
     Window* window = _windowToThis[(uintptr_t)w];
-    window->_scheduler->once([window, width, height] {
+    Scheduler::get()->sync([window, width, height] {
         emit(window, &Window::resize, width, height);
     });
 }
@@ -97,7 +97,7 @@ void Window::_refreshHandler(GLFWwindow* w)
     Window* window = _windowToThis[(uintptr_t)w];
 
     /* Update scheduler */
-    window->_scheduler->update();
+    Scheduler::get()->update();
 
     /* Call draw */
     emit(window, &Window::draw);
@@ -119,7 +119,7 @@ void Window::_cursorPosHandler(GLFWwindow* w, double x, double y)
 
     // We can not immediately emit, it must be scheduled
     Window* window = _windowToThis[(uintptr_t)w];
-    window->_scheduler->once([window, x, y, mouse] {
+    Scheduler::get()->sync([window, x, y, mouse] {
         emit(window, &Window::mousemove, x, y, mouse);
     });
 }

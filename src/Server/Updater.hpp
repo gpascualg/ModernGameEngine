@@ -18,27 +18,15 @@ namespace Core
         friend class Scheduler;
 
     public:
-        virtual ~Updater()
-        {
-        }
+        virtual ~Updater();
 
     protected:
-        Updater()
-        {
-        }
+        Updater();
 
-        Pool::Future addToPool();
-
-        virtual int update()
-        {
-            return 0;
-        }
+        virtual int update();
 
     private:
-        static int entry_point(void* me)
-        {
-            return static_cast<Updater*>(me)->update();
-        }
+        static int entry_point(void* me);
 
     protected:
         int _bulkDequeue;

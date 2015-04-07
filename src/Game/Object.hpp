@@ -11,7 +11,7 @@ public:
     virtual void initialize() = 0;
     virtual void draw() = 0;
 
-    inline uint32_t getID();
+    LFS_INLINE uint32_t getID();
 
 private:
     uint32_t _id;

@@ -156,12 +156,4 @@ namespace Shader
 
         return _program != 0;
     }
-
-    bool Program::bind()
-    {
-        glUseProgram(_program);
-
-        return glGetError() == 0;
-    }
-
 }

@@ -45,7 +45,7 @@ int main(int argc, const char* argv[]) {
     bind(&window, &Window::mousemove, game, &Game::onMouseMove);
 
     // Enter the main loop
-    window.mainloop(scheduler);
+    window.mainloop();
 
     LOGD("[END] Stopping all threads");
 

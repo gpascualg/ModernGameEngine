@@ -10,36 +10,16 @@ namespace Pool {
 
     protected:
 
+        WorkerThread(Queue* queue, int bulkDequeue);
+        WorkerThread(nullptr_t n);
+
+        static void _static_functor(WorkerThread* me);
         virtual void _functor() = 0;
 
-        static void _static_functor(WorkerThread* me) {
-            me->_functor();
-        }
+        LFS_INLINE void start();
+        LFS_INLINE std::thread::id getID();
 
-        WorkerThread(Queue* queue, int bulkDequeue):
-            _queue(queue),
-            _bulkDequeue{bulkDequeue},
-            _busy{false},
-            _stop{false}
-        {
-        }
-
-        WorkerThread(nullptr_t n):
-            _busy{false},
-            _stop{false}
-        {
-        }
-
-        LFS_INLINE void start()
-        {
-            _thread = std::move(std::thread(_static_functor, this));
-        }
-
-        LFS_INLINE std::thread::id getID()
-        {
-            return std::this_thread::get_id();
-        }
-
+    protected:
         Queue* _queue;
 
         std::thread _thread;
@@ -48,4 +28,16 @@ namespace Pool {
         std::atomic<bool> _stop;
     };
 
+
+    // INLINE METHODS
+
+    void WorkerThread::start()
+    {
+        _thread = std::move(std::thread(_static_functor, this));
+    }
+
+    std::thread::id WorkerThread::getID()
+    {
+        return std::this_thread::get_id();
+    }
 }

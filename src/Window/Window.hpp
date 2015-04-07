@@ -28,12 +28,8 @@ class Window
 public:
     Window(uint32_t width, uint32_t height, const char* title);
 
-    void mainloop(Scheduler* scheduler);
-
-    inline void update()
-    {
-        _update = true;
-    }
+    void mainloop();
+    LFS_INLINE void update();
 
 signals:
     SIGNAL(initializeGL());
@@ -53,3 +49,8 @@ private:
 
     static std::map<uintptr_t, Window*> _windowToThis;
 };
+
+void Window::update()
+{
+    _update = true;
+}
