@@ -17,7 +17,7 @@ namespace Shader
 
         GLuint attach(GLenum type, std::string path);
         bool bindAttribute(const char* attrib, GLuint index);
-        GLuint attributeLocation(const char* attrib);
+        inline GLuint attributeLocation(const char* attrib);
         bool link();
         bool bind();
 
@@ -29,4 +29,8 @@ namespace Shader
         std::map<std::string, GLuint> _attribs;
     };
 
+    GLuint Program::attributeLocation(const char* attrib)
+    {
+        return _attribs[attrib];
+    }
 }

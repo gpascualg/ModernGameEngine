@@ -130,11 +130,6 @@ namespace Shader
         return true;
     }
 
-    GLuint Program::attributeLocation(const char* attrib)
-    {
-        return _attribs[attrib];
-    }
-
     bool Program::link()
     {
         GLint result;

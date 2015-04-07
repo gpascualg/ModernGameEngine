@@ -15,7 +15,7 @@ Game::Game(Window* window) :
     lastX(0), lastY(0)
 {
     _program = new Shader::Program();
-    _cube = new Cube(0);
+    _cube = new Cube(0, _program);
     _cube->initialize();
 }
 
@@ -34,9 +34,11 @@ void Game::initializeGL()
     _program->attach(GL_VERTEX_SHADER, Resources::getPath("shaders", "vertex.glsl"));
     _program->attach(GL_FRAGMENT_SHADER, Resources::getPath("shaders", "fragment.glsl"));
 
+    /* Bind varying locations to fixed index */
     _program->bindAttribute("vPosition", 0);
     _program->bindAttribute("vColor", 1);
-    
+
+    /* Link program and bind */
     _program->link();
     _program->bind();
 
@@ -44,7 +46,7 @@ void Game::initializeGL()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    /* Update (UNIX won't render unless called, windows does) */
+    /* Update (UNIX won't render unless called, Windows does) */
     _window->update();
 }
 

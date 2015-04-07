@@ -1,8 +1,12 @@
 #include "Cube.hpp"
+#include "Program.hpp"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 
-Cube::Cube(const uint32_t id) :
-    Object(id)
+Cube::Cube(const uint32_t id, Shader::Program* program) :
+    Object(id),
+    _program(program)
 {
     // Vertices of a unit cube centered at origin, sides aligned with axes
     vertices[0] = point4( -0.5, -0.5,  0.5, 1.0 );
@@ -57,13 +61,13 @@ void Cube::initialize()
 
 void Cube::draw()
 {
-    // TODO: program->bind();
+    _program->bind();
     glBindBuffer(GL_ARRAY_BUFFER, _buffers);
-    
+
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0); // TODO: Use program->attributeLocation("vPosition");
+    glVertexAttribPointer(_program->attributeLocation("vPosition"), 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(points)); // TODO: Use program->attributeLocation("vColor");
+    glVertexAttribPointer(_program->attributeLocation("vColor"), 4, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(points));
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //GL_LINE
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
