@@ -46,6 +46,7 @@ include_directories(
 )
 
 set(ModernGameEngine_DEFINITIONS -DGLEW_STATIC CACHE INTERNAL "" FORCE)
+add_definitions(${ModernGameEngine_DEFINITIONS})
 
 add_library(ModernGameEngine
   ${EPS_SRCS}
