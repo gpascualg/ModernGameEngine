@@ -16,6 +16,8 @@ cmake_policy(SET CMP0005 OLD)
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
+project(MGEngine)
+
 # set macro-directory
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/macros")
 
@@ -36,7 +38,7 @@ if( UNIX )
     set (CMAKE_CXX_FLAGS "-std=c++11")
     set (THREAD_LIB "pthread")
 elseif ( WIN32 )
-	set (THREAD_LIB "")
+    set (THREAD_LIB "")
 endif()
 
 # Add dependencies
