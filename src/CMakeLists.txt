@@ -25,7 +25,7 @@ set(EPS_SRCS
   ${sources_Window}
 )
 
-include_directories(
+set(ModernGameEngine_INCLUDE
   ${CMAKE_BINARY_DIR}
   ${CMAKE_SOURCE_DIR}/include/Pool
   ${CMAKE_SOURCE_DIR}/include/Scheduler
@@ -38,7 +38,11 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/dep/glm
 )
 
-add_definitions(-DGLEW_STATIC)
+include_directories(
+  ${ModernGameEngine_INCLUDE}
+)
+
+set(ModernGameEngine_DEFINITIONS -DGLEW_STATIC)
 
 add_library(ModernGameEngine
   ${EPS_SRCS}
