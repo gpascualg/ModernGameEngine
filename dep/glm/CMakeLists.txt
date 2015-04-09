@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_policy(SET CMP0054 OLD)
 
 project(glm)
 enable_testing()
@@ -97,7 +98,7 @@ elseif(GLM_TEST_ENABLE_SIMD_SSE3)
 	elseif(GLM_USE_INTEL)
 		add_definitions(/QxSSE3)
 	elseif(MSVC)
-		add_definitions(/arch:SSE2) # VC doesn't support /arch:SSE3	
+		add_definitions(/arch:SSE2) # VC doesn't support /arch:SSE3
 	endif()
 elseif(GLM_TEST_ENABLE_SIMD_SSE2)
 	if(CMAKE_COMPILER_IS_GNUCXX)
@@ -118,11 +119,11 @@ if(GLM_TEST_ENABLE_FAST_MATH)
 	endif()
 
 	if(MSVC)
-		add_definitions(/fp:fast)	
+		add_definitions(/fp:fast)
 	endif()
 elseif(NOT GLM_TEST_ENABLE_FAST_MATH)
 	if(MSVC)
-		add_definitions(/fp:precise)	
+		add_definitions(/fp:precise)
 	endif()
 endif()
 
