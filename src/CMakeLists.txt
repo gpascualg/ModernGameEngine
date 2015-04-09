@@ -37,13 +37,15 @@ set(ModernGameEngine_INCLUDE
   ${CURRENT_PROJECT_DIRECTORY}/dep/glfw/include
   ${CURRENT_PROJECT_DIRECTORY}/dep/glew/include
   ${CURRENT_PROJECT_DIRECTORY}/dep/glm
+
+  CACHE INTERNAL "" FORCE
 )
 
 include_directories(
   ${ModernGameEngine_INCLUDE}
 )
 
-set(ModernGameEngine_DEFINITIONS -DGLEW_STATIC)
+set(ModernGameEngine_DEFINITIONS -DGLEW_STATIC CACHE INTERNAL "" FORCE)
 
 add_library(ModernGameEngine
   ${EPS_SRCS}
@@ -55,4 +57,6 @@ set(ModernGameEngine_LIBRARIES
   glew_s
   ${GLFW_LIBRARIES}
   ModernGameEngine
+
+  CACHE INTERNAL "" FORCE
 )
