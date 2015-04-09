@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
+# Based on TrinityCore CMake files
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -10,10 +10,8 @@
 
 project(ModernGameEngine)
 
-set(GLEW_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/dep/glew/)
-
 file(GLOB_RECURSE sources_Pool Pool/*.cpp     ${CMAKE_SOURCE_DIR}/include/Pool/*.hpp)
-file(GLOB_RECURSE sources_Server Server/*.cpp ${CMAKE_SOURCE_DIR}/include/Server/*.hpp)
+file(GLOB_RECURSE sources_Scheduler Scheduler/*.cpp ${CMAKE_SOURCE_DIR}/include/Scheduler/*.hpp)
 file(GLOB_RECURSE sources_Shader Shader/*.cpp ${CMAKE_SOURCE_DIR}/include/Shader/*.hpp)
 file(GLOB_RECURSE sources_Utils Utils/*.cpp   ${CMAKE_SOURCE_DIR}/include/Utils/*.hpp)
 file(GLOB_RECURSE sources_Window Window/*.cpp ${CMAKE_SOURCE_DIR}/include/Window/*.hpp)
@@ -21,7 +19,7 @@ file(GLOB_RECURSE sources_Window Window/*.cpp ${CMAKE_SOURCE_DIR}/include/Window
 set(EPS_SRCS
   ${EPS_SRCS}
   ${sources_Pool}
-  ${sources_Server}
+  ${sources_Scheduler}
   ${sources_Shader}
   ${sources_Utils}
   ${sources_Window}
@@ -30,7 +28,7 @@ set(EPS_SRCS
 include_directories(
   ${CMAKE_BINARY_DIR}
   ${CMAKE_SOURCE_DIR}/include/Pool
-  ${CMAKE_SOURCE_DIR}/include/Server
+  ${CMAKE_SOURCE_DIR}/include/Scheduler
   ${CMAKE_SOURCE_DIR}/include/Shader
   ${CMAKE_SOURCE_DIR}/include/Utils
   ${CMAKE_SOURCE_DIR}/include/Window
@@ -51,4 +49,5 @@ set(ModernGameEngine_LIBRARIES
   glfw
   glew_s
   ${GLFW_LIBRARIES}
+  ModernGameEngine
 )
