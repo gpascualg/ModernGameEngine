@@ -9,12 +9,13 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 project(ModernGameEngine)
+get_filename_component(CURRENT_PROJECT_DIRECTORY ${PROJECT_SOURCE_DIR}/.. REALPATH)
 
-file(GLOB_RECURSE sources_Pool Pool/*.cpp     ${CMAKE_SOURCE_DIR}/include/Pool/*.hpp)
-file(GLOB_RECURSE sources_Scheduler Scheduler/*.cpp ${CMAKE_SOURCE_DIR}/include/Scheduler/*.hpp)
-file(GLOB_RECURSE sources_Shader Shader/*.cpp ${CMAKE_SOURCE_DIR}/include/Shader/*.hpp)
-file(GLOB_RECURSE sources_Utils Utils/*.cpp   ${CMAKE_SOURCE_DIR}/include/Utils/*.hpp)
-file(GLOB_RECURSE sources_Window Window/*.cpp ${CMAKE_SOURCE_DIR}/include/Window/*.hpp)
+file(GLOB_RECURSE sources_Pool Pool/*.cpp           ${CURRENT_PROJECT_DIRECTORY}/include/Pool/*.hpp)
+file(GLOB_RECURSE sources_Scheduler Scheduler/*.cpp ${CURRENT_PROJECT_DIRECTORY}/include/Scheduler/*.hpp)
+file(GLOB_RECURSE sources_Shader Shader/*.cpp       ${CURRENT_PROJECT_DIRECTORY}/include/Shader/*.hpp)
+file(GLOB_RECURSE sources_Utils Utils/*.cpp         ${CURRENT_PROJECT_DIRECTORY}/include/Utils/*.hpp)
+file(GLOB_RECURSE sources_Window Window/*.cpp       ${CURRENT_PROJECT_DIRECTORY}/include/Window/*.hpp)
 
 set(EPS_SRCS
   ${EPS_SRCS}
@@ -27,15 +28,15 @@ set(EPS_SRCS
 
 set(ModernGameEngine_INCLUDE
   ${CMAKE_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}/include/Pool
-  ${CMAKE_SOURCE_DIR}/include/Scheduler
-  ${CMAKE_SOURCE_DIR}/include/Shader
-  ${CMAKE_SOURCE_DIR}/include/Utils
-  ${CMAKE_SOURCE_DIR}/include/Window
+  ${CURRENT_PROJECT_DIRECTORY}/include/Pool
+  ${CURRENT_PROJECT_DIRECTORY}/include/Scheduler
+  ${CURRENT_PROJECT_DIRECTORY}/include/Shader
+  ${CURRENT_PROJECT_DIRECTORY}/include/Utils
+  ${CURRENT_PROJECT_DIRECTORY}/include/Window
 
-  ${CMAKE_SOURCE_DIR}/dep/glfw/include
-  ${CMAKE_SOURCE_DIR}/dep/glew/include
-  ${CMAKE_SOURCE_DIR}/dep/glm
+  ${CURRENT_PROJECT_DIRECTORY}/dep/glfw/include
+  ${CURRENT_PROJECT_DIRECTORY}/dep/glew/include
+  ${CURRENT_PROJECT_DIRECTORY}/dep/glm
 )
 
 include_directories(
