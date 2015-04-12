@@ -15,6 +15,8 @@
 #include "ThreadPool.hpp"
 #include "Updater.hpp"
 
+#define MAX_SKIP_FRAMES 5
+
 namespace Core {
 
     class Updater;
@@ -25,6 +27,12 @@ namespace Core {
         int ticks;
         int accumulated;
     };
+
+	struct SyncStruct
+	{
+		std::function<void(void*)> function;
+		void* arg;
+	};
 
     template <typename TimeBase>
     class Scheduler
@@ -37,11 +45,20 @@ namespace Core {
 
         LFS_INLINE void every(int ticks, Updater* updater);
         LFS_INLINE Pool::Future async(Pool::Function& fnc, void* arg);
-        LFS_INLINE void sync(std::function<void(void)> func);
+        LFS_INLINE void sync(std::function<void(void*)> func, void* arg = nullptr);
 
         LFS_INLINE int update();
 
         static int update_handler(void* me);
+
+		void setUpdateEndCallback(std::function<void(void*, float)> fnc, void* arg)
+		{
+			_updateEndCallback = fnc;
+			_updateEndArgument = arg;
+		}
+
+	signals:
+		SIGNAL(updateEnd(float));
 
     private:
         Scheduler(int ticksPerSecond);
@@ -52,8 +69,13 @@ namespace Core {
         int _ticksPerSecond;
         double _updateEvery;
         uint64_t _lastUpdate;
+		uint64_t _nextTick;
         std::vector<Ticker> _timers;
-        moodycamel::ConcurrentQueue <std::function<void(void)> > _syncExec;
+		std::vector<Pool::Future> _futures;
+        moodycamel::ConcurrentQueue<SyncStruct> _syncExec;
+
+		std::function<void(void*, float)> _updateEndCallback;
+		void* _updateEndArgument;
     };
 
 
@@ -79,8 +101,8 @@ namespace Core {
     template <typename T>
     uint64_t Scheduler<T>::now()
     {
-        auto now = std::chrono::system_clock::now();
-        auto duration = now.time_since_epoch();
+		using Clock = std::chrono::high_resolution_clock;
+		auto duration = Clock::now().time_since_epoch();
         auto count = std::chrono::duration_cast<T>(duration).count();
         return count;
     }
@@ -98,11 +120,71 @@ namespace Core {
     }
 
     template <typename T>
-    void Scheduler<T>::sync(std::function<void(void)> func)
+    void Scheduler<T>::sync(std::function<void(void*)> func, void* arg)
     {
-        _syncExec.enqueue(func);
+		_syncExec.enqueue(SyncStruct{ func, arg });
     }
 
+	template <typename T>
+	int Scheduler<T>::update()
+	{
+		//uint64_t time_now = now();
+		uint8_t loops = 0;
+		float interpolate = 0;
+
+		// Remaining ticks since last update
+		while (now() > _nextTick && loops < MAX_SKIP_FRAMES)
+		{
+			for (size_t i = 0; i < _timers.size(); ++i)
+			{
+				auto& ticker = _timers[i];
+
+				if (ticker.accumulated + 1 >= ticker.ticks)
+				{
+					_futures.push_back(Pool::ThreadPool::get()->enqueue(
+						Pool::Function(ticker.updater->entry_point),
+						ticker.updater));
+
+					ticker.accumulated = 0;
+				}
+				else
+				{
+					++ticker.accumulated;
+				}
+			}
+
+			_nextTick += (uint64_t)_updateEvery;
+			++loops;
+
+			// Wait for all tasks to finish
+			for (size_t i = 0; i < _futures.size(); ++i)
+			{
+				_futures[i].get();
+			}
+			_futures.clear();
+
+			// One time synchronized executions
+			size_t dequeueCount;
+			SyncStruct fns[5];
+			while ((dequeueCount = _syncExec.try_dequeue_bulk(fns, 5)) > 0)
+			{
+				for (unsigned int i = 0; i < dequeueCount; ++i)
+				{
+					SyncStruct& temp = fns[i];
+					temp.function(temp.arg);
+					--dequeueCount;
+				}
+			}
+		}
+
+		interpolate = float(now() - _nextTick + _updateEvery) / float(_updateEvery); // 10 -/-/-/-/-/-/-> 11
+		//emit(this, &Scheduler::updateEnd, interpolate);
+		_updateEndCallback(_updateEndArgument, interpolate);
+
+		return 1;
+	}
+
+	/*
     template <typename T>
     int Scheduler<T>::update()
     {
@@ -148,4 +230,5 @@ namespace Core {
 
         return 1;
     }
+	*/
 }

@@ -31,6 +31,11 @@ public:
     void mainloop();
     LFS_INLINE void update();
 
+	GLFWwindow* operator*()
+	{
+		return _window;
+	}
+
 signals:
     SIGNAL(initializeGL());
     SIGNAL(draw());
