@@ -52,6 +52,8 @@ private:
     Scheduler* _scheduler;
     std::atomic<bool> _update;
 
+	std::atomic<bool> _mouseUpdated;
+
     static std::map<uintptr_t, Window*> _windowToThis;
 };
 

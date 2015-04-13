@@ -5,7 +5,8 @@ std::map<uintptr_t, Window*> Window::_windowToThis;
 
 Window::Window(uint32_t width, uint32_t height, const char* title) :
     _window(nullptr),
-    _update(false)
+    _update(false),
+	_mouseUpdated(false)
 {
     static bool libraryInitialized = false;
     if (!libraryInitialized)
@@ -28,6 +29,7 @@ Window::Window(uint32_t width, uint32_t height, const char* title) :
 
     /* Make the window's context current */
     glfwMakeContextCurrent(_window);
+	glfwSwapInterval(0);
 
     /* Setup callbacks */
     glfwSetWindowSizeCallback(_window, _resizeHandler);
@@ -93,20 +95,24 @@ void Window::_refreshHandler(GLFWwindow* w)
 
 void Window::_cursorPosHandler(GLFWwindow* w, double x, double y)
 {
-    uint8_t mouse = 0;
+	// We can not immediately emit, it must be scheduled
+	Window* window = _windowToThis[(uintptr_t)w];
 
-    if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-    {
-        mouse |= Mouse::LeftButton;
-    }
-    if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-    {
-        mouse |= Mouse::RightButton;
-    }
+	if (!window->_mouseUpdated)
+	{
+		window->_mouseUpdated = true;
+		uint8_t mouse = 0;
 
-    // We can not immediately emit, it must be scheduled
-    Window* window = _windowToThis[(uintptr_t)w];
-    Scheduler::get()->sync([window, x, y, mouse] (void*) -> void {
-        emit(window, &Window::mousemove, x, y, mouse);
-    });
+		if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			mouse |= Mouse::LeftButton;
+		}
+		if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+		{
+			mouse |= Mouse::RightButton;
+		}
+
+		emit(window, &Window::mousemove, x, y, mouse);
+		window->_mouseUpdated = false;
+	}
 }

@@ -3,7 +3,6 @@
 #include "WorkerThread.hpp"
 #include "TaskWorker.hpp"
 #include "PermaWorker.hpp"
-#include "TaskWrapper.hpp"
 
 
 namespace Pool {
@@ -31,15 +30,6 @@ namespace Pool {
 
             delete worker;
         }
-    }
-
-    Future ThreadPool::enqueue(Function&& function, void* argument)
-    {
-        Task task(function);
-        Future future = task.get_future();
-        _queue.enqueue(_token, new TaskWrapper(task, argument));
-
-        return future;
     }
 
     void ThreadPool::permanent(Function&& function, void* argument)
