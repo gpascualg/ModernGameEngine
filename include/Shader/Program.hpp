@@ -15,6 +15,7 @@ namespace Shader
         GLuint attach(GLenum type, std::string path);
         bool bindAttribute(const char* attrib, GLuint index);
         LFS_INLINE GLuint attributeLocation(const char* attrib);
+		LFS_INLINE GLuint uniformLocation(const char* unif);
         bool link();
         LFS_INLINE bool bind();
 
@@ -23,7 +24,8 @@ namespace Shader
 
     private:
         GLuint _program;
-        std::map<std::string, GLuint> _attribs;
+		std::map<std::string, GLuint> _attribs;
+		std::map<std::string, GLuint> _uniforms;
     };
 
 
@@ -38,6 +40,19 @@ namespace Shader
     {
         return _attribs[attrib];
     }
+
+	GLuint Program::uniformLocation(const char* unif)
+	{
+		auto ret = _uniforms.find(unif);
+		if (ret != _uniforms.end())
+		{
+			return ret->second;
+		}
+
+		GLuint unifLocation = glGetUniformLocation(this->_program, unif);
+		_uniforms.insert(std::make_pair(unif, unifLocation));
+		return unifLocation;
+	}
 
     bool Program::bind()
     {

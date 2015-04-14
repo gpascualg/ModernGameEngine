@@ -29,7 +29,12 @@ public:
     Window(uint32_t width, uint32_t height, const char* title);
 
     void mainloop();
-    LFS_INLINE void update();
+	LFS_INLINE void update();
+	LFS_INLINE void setMouseFixed();
+	LFS_INLINE void setMouseFixed(double x, double y);
+
+	LFS_INLINE int getWidth();
+	LFS_INLINE int getHeight();
 
 	GLFWwindow* operator*()
 	{
@@ -52,7 +57,13 @@ private:
     Scheduler* _scheduler;
     std::atomic<bool> _update;
 
-	std::atomic<bool> _mouseUpdated;
+	int _width;
+	int _height;
+
+	bool _fakeCallback;
+	bool _fixMouse;
+	double _fixMouseX;
+	double _fixMouseY;
 
     static std::map<uintptr_t, Window*> _windowToThis;
 };
@@ -60,4 +71,26 @@ private:
 void Window::update()
 {
     _update = true;
+}
+
+void Window::setMouseFixed()
+{
+	setMouseFixed(_width / 2.0f, _height / 2.0f);
+}
+
+void Window::setMouseFixed(double x, double y)
+{
+	_fixMouse = true;
+	_fixMouseX = x;
+	_fixMouseY = y;
+}
+
+LFS_INLINE int Window::getWidth()
+{
+	return _width;
+}
+
+LFS_INLINE int Window::getHeight()
+{
+	return _height;
 }
