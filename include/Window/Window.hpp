@@ -20,6 +20,16 @@ enum Mouse
     RightButton = 2
 };
 
+enum Keys
+{
+	W = GLFW_KEY_W,
+	A = GLFW_KEY_A,
+	S = GLFW_KEY_S,
+	D = GLFW_KEY_D,
+	SPACE = GLFW_KEY_SPACE,
+	LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT
+};
+
 class Window
 {
     template<typename ... T>
@@ -35,6 +45,8 @@ public:
 
 	LFS_INLINE int getWidth();
 	LFS_INLINE int getHeight();
+	LFS_INLINE void getMouseDelta(uint8_t& buttons, double& x, double& y);
+	LFS_INLINE bool isKeyPressed(int key);
 
 	GLFWwindow* operator*()
 	{
@@ -45,12 +57,10 @@ signals:
     SIGNAL(initializeGL());
     SIGNAL(draw());
     SIGNAL(resize(int, int));
-    SIGNAL(mousemove(double, double, uint8_t));
 
 private:
     static void _resizeHandler(GLFWwindow* w, int width, int height);
     static void _refreshHandler(GLFWwindow* w);
-    static void _cursorPosHandler(GLFWwindow* w, double x, double y);
 
 private:
     GLFWwindow* _window;
@@ -60,7 +70,6 @@ private:
 	int _width;
 	int _height;
 
-	bool _fakeCallback;
 	bool _fixMouse;
 	double _fixMouseX;
 	double _fixMouseY;
@@ -85,12 +94,38 @@ void Window::setMouseFixed(double x, double y)
 	_fixMouseY = y;
 }
 
-LFS_INLINE int Window::getWidth()
+int Window::getWidth()
 {
 	return _width;
 }
 
-LFS_INLINE int Window::getHeight()
+int Window::getHeight()
 {
 	return _height;
+}
+
+void Window::getMouseDelta(uint8_t& buttons, double& x, double& y)
+{
+	if (glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	{
+		buttons |= Mouse::LeftButton;
+	}
+	if (glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	{
+		buttons |= Mouse::RightButton;
+	}
+
+	glfwGetCursorPos(_window, &x, &y);
+	x -= _fixMouseX;
+	y -= _fixMouseY;
+
+	if (_fixMouse)
+	{
+		glfwSetCursorPos(_window, _fixMouseX, _fixMouseY);
+	}
+}
+
+bool Window::isKeyPressed(int key)
+{
+	return glfwGetKey(_window, key) == GLFW_PRESS;
 }

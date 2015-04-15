@@ -8,8 +8,7 @@ Window::Window(uint32_t width, uint32_t height, const char* title) :
     _update(false),
 	_height(height),
 	_width(width),
-	_fixMouse(false),
-	_fakeCallback(false)
+	_fixMouse(false)
 {
     static bool libraryInitialized = false;
     if (!libraryInitialized)
@@ -37,7 +36,13 @@ Window::Window(uint32_t width, uint32_t height, const char* title) :
     /* Setup callbacks */
     glfwSetWindowSizeCallback(_window, _resizeHandler);
     glfwSetWindowRefreshCallback(_window, _refreshHandler);
-    glfwSetCursorPosCallback(_window, _cursorPosHandler);
+
+	/* Key persistance */
+	glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(_window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
+
+	/* Hide mouse */
+	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     /* Init Glew */
     if (!libraryInitialized)
@@ -98,35 +103,4 @@ void Window::_refreshHandler(GLFWwindow* w)
 
     /* Update scheduler */
     Scheduler::get()->update();
-}
-
-void Window::_cursorPosHandler(GLFWwindow* w, double x, double y)
-{
-	// We can not immediately emit, it must be scheduled
-	Window* window = _windowToThis[(uintptr_t)w];
-
-	if (window->_fakeCallback)
-	{
-		window->_fakeCallback = false;
-		return;
-	}
-
-	uint8_t mouse = 0;
-
-	if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-	{
-		mouse |= Mouse::LeftButton;
-	}
-	if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-	{
-		mouse |= Mouse::RightButton;
-	}
-
-	emit(window, &Window::mousemove, x, y, mouse);
-
-	if (window->_fixMouse)
-	{
-		glfwSetCursorPos(w, window->_fixMouseX, window->_fixMouseY);
-		window->_fakeCallback = true;
-	}
 }

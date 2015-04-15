@@ -2,11 +2,13 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(glm::vec3 sceneDimensions)
+Camera::Camera(glm::vec3 sceneDimensions):
+	_angX(0),
+	_angY(0)
 {
 	_model = glm::scale(glm::mat4(), glm::vec3(2 / sceneDimensions[0], 2 / sceneDimensions[1], 2 / sceneDimensions[2]));
 	_vup = glm::vec3(0, 1, 0);
-	_vrp = glm::vec3(0, 0, 0);
+	_dir = glm::vec3(-1, -1, 0); // _vrp = (0, 0, 0) = (1, 1, 0) + (-1, -1, 0)
 	_obs = glm::vec3(1, 1, 0);
 
 	_aspect = 4.0f / 3.0f;
@@ -17,7 +19,7 @@ Camera::Camera(glm::vec3 sceneDimensions)
 
 void Camera::calculateViewMatrix()
 {
-	_view = glm::lookAt(_obs, _vrp, _vup);
+	_view = glm::lookAt(_obs, _obs + _dir, _vup);
 }
 
 void Camera::calculateProjectionMatrix()
