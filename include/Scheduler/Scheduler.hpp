@@ -16,6 +16,7 @@
 #include "Updater.hpp"
 
 #define MAX_SKIP_FRAMES 5
+#define SYNC_DEQUEUE_SIZE 10
 
 namespace Core {
 
@@ -61,13 +62,20 @@ namespace Core {
     private:
         static Scheduler<TimeBase>* _instance;
 
+        uint32_t _timeDivider;
         int _ticksPerSecond;
         double _updateEvery;
         uint64_t _lastUpdate;
         uint64_t _nextTick;
+
+        uint32_t _FPS;
+        uint64_t _lastFPS;
+
         std::vector<Ticker> _timers;
         std::vector<Pool::Future> _futures;
+
         moodycamel::ConcurrentQueue<SyncStruct> _syncExec;
+        SyncStruct _syncedFunctions[SYNC_DEQUEUE_SIZE];
     };
 
 
@@ -154,30 +162,38 @@ namespace Core {
 
             _nextTick += (uint64_t)_updateEvery;
             ++loops;
+        }        
 
-            // Wait for all tasks to finish
-            for (size_t i = 0; i < _futures.size(); ++i)
-            {
-                _futures[i].get();
-            }
-            _futures.clear();
+        // Wait for all tasks to finish
+        for (size_t i = 0; i < _futures.size(); ++i)
+        {
+            _futures[i].get();
+        }
+        _futures.clear();
 
-            // One time synchronized executions
-            size_t dequeueCount;
-            SyncStruct fns[5];
-            while ((dequeueCount = _syncExec.try_dequeue_bulk(fns, 5)) > 0)
+        // One time synchronized executions
+        size_t dequeueCount;
+        while ((dequeueCount = _syncExec.try_dequeue_bulk(_syncedFunctions, SYNC_DEQUEUE_SIZE)) > 0)
+        {
+            for (unsigned int i = 0; i < dequeueCount; ++i)
             {
-                for (unsigned int i = 0; i < dequeueCount; ++i)
-                {
-                    SyncStruct& temp = fns[i];
-                    temp.function(temp.arg);
-                    --dequeueCount;
-                }
+                SyncStruct& temp = _syncedFunctions[i];
+                temp.function(temp.arg);
+                --dequeueCount;
             }
         }
 
-        interpolate = float(now() - _nextTick + _updateEvery) / float(_updateEvery); // 10 -/-/-/-/-/-/-> 11
+        uint64_t currentTime = now();
+        interpolate = float(currentTime - _nextTick + _updateEvery) / float(_updateEvery); // 10 -/-/-/-/-/-/-> 11
         emit(this, &Scheduler::updateEnd, interpolate);
+
+        ++_FPS;
+        if (currentTime - _lastFPS >= _timeDivider)
+        {
+            printf("Running at %d FPSs\n", _FPS);
+            _lastFPS = currentTime;
+            _FPS = 0;
+        }
 
         return 1;
     }

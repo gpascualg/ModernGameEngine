@@ -8,15 +8,17 @@ namespace Core {
     Scheduler<T>::Scheduler(int ticksPerSecond):
         _ticksPerSecond(ticksPerSecond),
         _lastUpdate(now()),
-        _nextTick(now())
+        _nextTick(now()),
+        _lastFPS(now()),
+        _FPS(0)
     {
         std::chrono::seconds sec(1);
-        auto base = std::chrono::duration_cast<T>(sec).count();
+        _timeDivider = std::chrono::duration_cast<T>(sec).count();
 
-        _updateEvery = static_cast<double>(base) / ticksPerSecond,
+        _updateEvery = static_cast<double>(_timeDivider) / ticksPerSecond,
 
         LOGD("TicksPerSecond = %d", _ticksPerSecond);
-        LOGD("UpdateEvery = %3.3f (%0.5lfs)", _updateEvery, _updateEvery / base);
+        LOGD("UpdateEvery = %3.3f (%0.5lfs)", _updateEvery, _updateEvery / _timeDivider);
     }
 
     template <typename T>
