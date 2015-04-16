@@ -8,7 +8,7 @@ namespace Core {
     Scheduler<T>::Scheduler(int ticksPerSecond):
         _ticksPerSecond(ticksPerSecond),
         _lastUpdate(now()),
-		_nextTick(now())
+        _nextTick(now())
     {
         std::chrono::seconds sec(1);
         auto base = std::chrono::duration_cast<T>(sec).count();
@@ -23,7 +23,7 @@ namespace Core {
     int Scheduler<T>::update_handler(void* me)
     {
         //std::this_thread::sleep_for(T(100));
-		std::this_thread::yield();
+        std::this_thread::yield();
         return static_cast<Scheduler*>(me)->update();
     }
 

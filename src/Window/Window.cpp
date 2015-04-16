@@ -6,9 +6,9 @@ std::map<uintptr_t, Window*> Window::_windowToThis;
 Window::Window(uint32_t width, uint32_t height, const char* title) :
     _window(nullptr),
     _update(false),
-	_height(height),
-	_width(width),
-	_fixMouse(false)
+    _height(height),
+    _width(width),
+    _fixMouse(false)
 {
     static bool libraryInitialized = false;
     if (!libraryInitialized)
@@ -31,18 +31,18 @@ Window::Window(uint32_t width, uint32_t height, const char* title) :
 
     /* Make the window's context current */
     glfwMakeContextCurrent(_window);
-	glfwSwapInterval(0);
+    glfwSwapInterval(0);
 
     /* Setup callbacks */
     glfwSetWindowSizeCallback(_window, _resizeHandler);
     glfwSetWindowRefreshCallback(_window, _refreshHandler);
 
-	/* Key persistance */
-	glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
-	glfwSetInputMode(_window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
+    /* Key persistance */
+    glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
+    glfwSetInputMode(_window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
 
-	/* Hide mouse */
-	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    /* Hide mouse */
+    glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     /* Init Glew */
     if (!libraryInitialized)
@@ -89,8 +89,8 @@ void Window::_resizeHandler(GLFWwindow* w, int width, int height)
     // We can not immediately emit, it must be scheduled
     Window* window = _windowToThis[(uintptr_t)w];
 
-	window->_width = width;
-	window->_height = height;
+    window->_width = width;
+    window->_height = height;
 
     Scheduler::get()->sync([window, width, height] (void*) {
         emit(window, &Window::resize, width, height);

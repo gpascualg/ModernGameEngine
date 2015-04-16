@@ -18,8 +18,8 @@ namespace Pool {
 
         ~ThreadPool();
 
-		LFS_INLINE Future enqueue(Function&& function, void* argument);
-		template <class C> LFS_INLINE Future enqueue(int(C::*func)(void*), C* caller, void* argument);
+        LFS_INLINE Future enqueue(Function&& function, void* argument);
+        template <class C> LFS_INLINE Future enqueue(int(C::*func)(void*), C* caller, void* argument);
         void permanent(Function&& function, void* argument);
 
         void stop();
@@ -55,18 +55,18 @@ namespace Pool {
         return _instance;
     }
 
-	template <class C> Future ThreadPool::enqueue(int(C::*func)(void*), C* caller, void* argument)
-	{
-		return enqueue([func, caller](void* arg) -> int { return (caller->*func)(arg); }, argument);
-	}
+    template <class C> Future ThreadPool::enqueue(int(C::*func)(void*), C* caller, void* argument)
+    {
+        return enqueue([func, caller](void* arg) -> int { return (caller->*func)(arg); }, argument);
+    }
 
-	Future ThreadPool::enqueue(Function&& function, void* argument)
-	{
-		Task task(function);
-		Future future = task.get_future();
-		_queue.enqueue(_token, new TaskWrapper(task, argument));
+    Future ThreadPool::enqueue(Function&& function, void* argument)
+    {
+        Task task(function);
+        Future future = task.get_future();
+        _queue.enqueue(_token, new TaskWrapper(task, argument));
 
-		return future;
-	}
+        return future;
+    }
 
 }
