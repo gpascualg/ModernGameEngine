@@ -69,7 +69,8 @@ namespace Core {
         uint64_t _nextTick;
 
         uint32_t _FPS;
-        uint64_t _lastFPS;
+        uint32_t _ticks;
+        uint64_t _lastCounterReset;
 
         std::vector<Ticker> _timers;
         std::vector<Pool::Future> _futures;
@@ -162,6 +163,7 @@ namespace Core {
 
             _nextTick += (uint64_t)_updateEvery;
             ++loops;
+            ++_ticks;
         }        
 
         // Wait for all tasks to finish
@@ -188,11 +190,14 @@ namespace Core {
         emit(this, &Scheduler::updateEnd, interpolate);
 
         ++_FPS;
-        if (currentTime - _lastFPS >= _timeDivider)
+        if (currentTime - _lastCounterReset >= _timeDivider)
         {
-            printf("Running at %d FPSs\n", _FPS);
-            _lastFPS = currentTime;
+            printf(":> [%4d FPS][%4d TPS]\r", _FPS, _ticks);
+            fflush(stdout);
+
+            _lastCounterReset = currentTime;
             _FPS = 0;
+            _ticks = 0;
         }
 
         return 1;

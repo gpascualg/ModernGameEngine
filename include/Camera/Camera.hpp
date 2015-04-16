@@ -18,12 +18,14 @@ public:
         _right = glm::vec3(sin(_angX - glm::half_pi<double>()), 0, cos(_angX - glm::half_pi<double>()));
         _vup = glm::cross(_right, _dir);
 
+        _front = glm::vec3(sin(_angX), 0, cos(_angX));
+
         calculateViewMatrix();
     }
 
     LFS_INLINE void moveCamera(glm::vec3 speed, glm::vec3 axis)
     {
-        _obs = _obs + speed * (axis[0] * _dir + axis[1] * _vup + axis[2] * _right);
+        _obs = _obs + speed * (axis[0] * (_locked ? _front : _dir) + axis[1] * _vup + axis[2] * _right);
 
         calculateViewMatrix();
     }
@@ -46,6 +48,16 @@ public:
         calculateProjectionMatrix();
     }
 
+    LFS_INLINE void setLocked(bool locked)
+    {
+        _locked = locked;
+    }
+
+    LFS_INLINE bool getLocked()
+    {
+        return _locked;
+    }
+
     void calculateViewMatrix();
     void calculateProjectionMatrix();
 
@@ -60,12 +72,16 @@ public:
     }
 
 private:
+    bool _locked;
+
     float _aspect;
 
     double _angX;
     double _angY;
 
+    glm::vec3 _front;
     glm::vec3 _right;
+
     glm::vec3 _obs;
     glm::vec3 _dir;
     glm::vec3 _vup;

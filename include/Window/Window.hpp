@@ -26,6 +26,7 @@ enum Keys
     A = GLFW_KEY_A,
     S = GLFW_KEY_S,
     D = GLFW_KEY_D,
+    L = GLFW_KEY_L,
     SPACE = GLFW_KEY_SPACE,
     LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT
 };

@@ -9,8 +9,9 @@ namespace Core {
         _ticksPerSecond(ticksPerSecond),
         _lastUpdate(now()),
         _nextTick(now()),
-        _lastFPS(now()),
-        _FPS(0)
+        _lastCounterReset(now()),
+        _FPS(0),
+        _ticks(0)
     {
         std::chrono::seconds sec(1);
         _timeDivider = std::chrono::duration_cast<T>(sec).count();
