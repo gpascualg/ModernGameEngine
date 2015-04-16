@@ -8,7 +8,7 @@ class Timer : public Core::Updater
 public:
     Timer();
 
-    virtual int update() override;
+    virtual int updateCPU(void* ) override;
 
 signals:
     SIGNAL(tick());

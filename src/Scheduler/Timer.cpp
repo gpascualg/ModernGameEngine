@@ -3,8 +3,8 @@
 Timer::Timer()
 {}
 
-int Timer::update()
+int Timer::updateCPU(void* arg0)
 {
     emit(this, &Timer::tick);
-    return Updater::update();
+    return Updater::updateCPU(arg0);
 }

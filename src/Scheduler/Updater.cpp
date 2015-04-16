@@ -8,14 +8,13 @@ namespace Core {
     Updater::~Updater()
     {}
 
-    int Updater::update()
+    int Updater::updateCPU(void* arg0)
     {
         return 0;
-    }
+	}
 
-    int Updater::entry_point(void* me)
-    {
-        return static_cast<Updater*>(me)->update();
-    }
-
+	int Updater::updateGPU()
+	{
+		return 0;
+	}
 }

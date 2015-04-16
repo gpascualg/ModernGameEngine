@@ -23,10 +23,8 @@ namespace Core
     protected:
         Updater();
 
-        virtual int update();
-
-    private:
-        static int entry_point(void* me);
+		virtual int updateCPU(void* arg0);
+		virtual int updateGPU();
 
     protected:
         int _bulkDequeue;

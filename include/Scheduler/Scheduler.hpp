@@ -34,7 +34,7 @@ namespace Core {
         std::function<void(void*)> function;
         void* arg;
     };
-
+	
     template <typename TimeBase>
     class Scheduler
     {
@@ -62,7 +62,7 @@ namespace Core {
     private:
         static Scheduler<TimeBase>* _instance;
 
-        uint32_t _timeDivider;
+        uint64_t _timeDivider;
         int _ticksPerSecond;
         double _updateEvery;
         uint64_t _lastUpdate;
@@ -73,7 +73,8 @@ namespace Core {
         uint64_t _lastCounterReset;
 
         std::vector<Ticker> _timers;
-        std::vector<Pool::Future> _futures;
+		std::vector<Updater*> _gpuUpdaters;
+		std::vector<Pool::Future> _gpuFutures;
 
         moodycamel::ConcurrentQueue<SyncStruct> _syncExec;
         SyncStruct _syncedFunctions[SYNC_DEQUEUE_SIZE];
@@ -149,9 +150,8 @@ namespace Core {
 
                 if (ticker.accumulated + 1 >= ticker.ticks)
                 {
-                    _futures.push_back(Pool::ThreadPool::get()->enqueue(
-                        Pool::Function(ticker.updater->entry_point),
-                        ticker.updater));
+					_gpuFutures.push_back(Pool::ThreadPool::get()->enqueue(&Updater::updateCPU, ticker.updater, nullptr));
+					_gpuUpdaters.push_back(ticker.updater);
 
                     ticker.accumulated = 0;
                 }
@@ -167,13 +167,16 @@ namespace Core {
         }        
 
         // Wait for all tasks to finish
-        for (size_t i = 0; i < _futures.size(); ++i)
+		for (size_t i = 0; i < _gpuFutures.size(); ++i)
         {
-            _futures[i].get();
+			_gpuFutures[i].get();
+			_gpuUpdaters[i]->updateGPU();
         }
-        _futures.clear();
+		_gpuFutures.clear();
+		_gpuUpdaters.clear();
 
         // One time synchronized executions
+		/*
         size_t dequeueCount;
         while ((dequeueCount = _syncExec.try_dequeue_bulk(_syncedFunctions, SYNC_DEQUEUE_SIZE)) > 0)
         {
@@ -184,6 +187,7 @@ namespace Core {
                 --dequeueCount;
             }
         }
+		*/
 
         uint64_t currentTime = now();
         interpolate = float(currentTime - _nextTick + _updateEvery) / float(_updateEvery); // 10 -/-/-/-/-/-/-> 11
