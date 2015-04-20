@@ -8,27 +8,46 @@ class Camera
 {
 public:
     Camera(glm::vec3 sceneDimensions);
-
+	
     LFS_INLINE void rotateCamera(double angX, double angY) // 2D coordinates -> 3D coordinates
     {
-        _angX -= angX;
-        _angY -= angY;
+		angX = _angX - angX;
+		angY = _angY - angY;
 
-        _dir = glm::vec3(cos(_angY) * sin(_angX), sin(_angY), cos(_angY) * cos(_angX));
-        _right = glm::vec3(sin(_angX - glm::half_pi<double>()), 0, cos(_angX - glm::half_pi<double>()));
-        _vup = glm::cross(_right, _dir);
+        glm::vec3 dir = glm::vec3(cos(angY) * sin(angX), sin(angY), cos(angY) * cos(angX));
+		glm::vec3 right = glm::vec3(sin(angX - glm::half_pi<double>()), 0, cos(angX - glm::half_pi<double>()));
+		glm::vec3 vup = glm::cross(right, dir);
 
-        _front = glm::vec3(sin(_angX), 0, cos(_angX));
+		if (!_interpolate)
+		{
+			_angX = angX;
+			_angY = angY;
+
+			_dir = dir;
+			_right = right;
+			_vup = vup;
+			_front = glm::vec3(sin(_angX), 0, cos(_angX));
+		}
 
         calculateViewMatrix();
     }
 
     LFS_INLINE void moveCamera(glm::vec3 speed, glm::vec3 axis)
     {
-        _obs = _obs + speed * (axis[0] * (_locked ? _front : _dir) + axis[1] * _vup + axis[2] * _right);
+		glm::vec3 obs = _obs + speed * (axis[0] * (_locked ? _front : _dir) + axis[1] * _vup + axis[2] * _right);
+
+		if (!_interpolate)
+		{
+			_obs = obs;
+		}
 
         calculateViewMatrix();
     }
+
+	LFS_INLINE void setInterpolation(bool interpolate)
+	{
+		_interpolate = interpolate;
+	}
 
     LFS_INLINE void setDIR(glm::vec3 dir)
     {
@@ -73,6 +92,7 @@ public:
 
 private:
     bool _locked;
+	bool _interpolate;
 
     float _aspect;
 

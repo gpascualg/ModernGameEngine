@@ -5,7 +5,8 @@
 Camera::Camera(glm::vec3 sceneDimensions):
     _angX(0),
     _angY(0),
-    _locked(false)
+    _locked(false),
+	_interpolate(false)
 {
     _model = glm::scale(glm::mat4(), glm::vec3(2 / sceneDimensions[0], 2 / sceneDimensions[1], 2 / sceneDimensions[2]));
     _vup = glm::vec3(0, 1, 0);

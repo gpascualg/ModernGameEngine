@@ -43,6 +43,7 @@ namespace Core {
         static LFS_INLINE Scheduler<TimeBase>* get();
 
         LFS_INLINE uint64_t now();
+		LFS_INLINE double dt();
 
         LFS_INLINE void every(int ticks, Updater* updater);
         LFS_INLINE Pool::Future async(Pool::Function& fnc, void* arg);
@@ -65,6 +66,7 @@ namespace Core {
         uint64_t _timeDivider;
         int _ticksPerSecond;
         double _updateEvery;
+		double _udpateEveryInSeconds;
         uint64_t _lastUpdate;
         uint64_t _nextTick;
 
@@ -108,6 +110,12 @@ namespace Core {
         auto count = std::chrono::duration_cast<T>(duration).count();
         return count;
     }
+
+	template <typename T>
+	double Scheduler<T>::dt()
+	{
+		return _udpateEveryInSeconds;
+	}
 
     template <typename T>
     void Scheduler<T>::every(int ticks, Updater* updater)
@@ -164,30 +172,19 @@ namespace Core {
             _nextTick += (uint64_t)_updateEvery;
             ++loops;
             ++_ticks;
-        }        
+        } 
 
-        // Wait for all tasks to finish
-		for (size_t i = 0; i < _gpuFutures.size(); ++i)
-        {
-			_gpuFutures[i].get();
-			_gpuUpdaters[i]->updateGPU();
-        }
-		_gpuFutures.clear();
-		_gpuUpdaters.clear();
-
-        // One time synchronized executions
-		/*
-        size_t dequeueCount;
-        while ((dequeueCount = _syncExec.try_dequeue_bulk(_syncedFunctions, SYNC_DEQUEUE_SIZE)) > 0)
-        {
-            for (unsigned int i = 0; i < dequeueCount; ++i)
-            {
-                SyncStruct& temp = _syncedFunctions[i];
-                temp.function(temp.arg);
-                --dequeueCount;
-            }
-        }
-		*/
+		if (loops)
+		{
+			// Wait for all tasks to finish
+			for (size_t i = 0; i < _gpuFutures.size(); ++i)
+			{
+				_gpuFutures[i].get();
+				_gpuUpdaters[i]->updateGPU();
+			}
+			_gpuFutures.clear();
+			_gpuUpdaters.clear();
+		}
 
         uint64_t currentTime = now();
         interpolate = float(currentTime - _nextTick + _updateEvery) / float(_updateEvery); // 10 -/-/-/-/-/-/-> 11

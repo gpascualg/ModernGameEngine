@@ -12,6 +12,7 @@ project(ModernGameEngine)
 get_filename_component(CURRENT_PROJECT_DIRECTORY ${PROJECT_SOURCE_DIR}/.. REALPATH)
 
 file(GLOB_RECURSE sources_Camera Camera/*.cpp       ${CURRENT_PROJECT_DIRECTORY}/include/Camera/*.hpp)
+file(GLOB_RECURSE sources_IO IO/*.cpp				${CURRENT_PROJECT_DIRECTORY}/include/IO/*.hpp)
 file(GLOB_RECURSE sources_Pool Pool/*.cpp           ${CURRENT_PROJECT_DIRECTORY}/include/Pool/*.hpp)
 file(GLOB_RECURSE sources_Scheduler Scheduler/*.cpp ${CURRENT_PROJECT_DIRECTORY}/include/Scheduler/*.hpp)
 file(GLOB_RECURSE sources_Shader Shader/*.cpp       ${CURRENT_PROJECT_DIRECTORY}/include/Shader/*.hpp)
@@ -21,6 +22,7 @@ file(GLOB_RECURSE sources_Window Window/*.cpp       ${CURRENT_PROJECT_DIRECTORY}
 set(EPS_SRCS
   ${EPS_SRCS}
   ${sources_Camera}
+  ${sources_IO}
   ${sources_Pool}
   ${sources_Scheduler}
   ${sources_Shader}
@@ -31,6 +33,7 @@ set(EPS_SRCS
 set(ModernGameEngine_INCLUDE
   ${CMAKE_BINARY_DIR}
   ${CURRENT_PROJECT_DIRECTORY}/include/Camera
+  ${CURRENT_PROJECT_DIRECTORY}/include/IO
   ${CURRENT_PROJECT_DIRECTORY}/include/Pool
   ${CURRENT_PROJECT_DIRECTORY}/include/Scheduler
   ${CURRENT_PROJECT_DIRECTORY}/include/Shader

@@ -16,10 +16,11 @@ namespace Core {
         std::chrono::seconds sec(1);
         _timeDivider = std::chrono::duration_cast<T>(sec).count();
 
-        _updateEvery = static_cast<double>(_timeDivider) / ticksPerSecond,
+		_updateEvery = static_cast<double>(_timeDivider) / ticksPerSecond,
+		_udpateEveryInSeconds = _updateEvery / _timeDivider;
 
-        LOGD("TicksPerSecond = %d", _ticksPerSecond);
-        LOGD("UpdateEvery = %3.3f (%0.5lfs)", _updateEvery, _updateEvery / _timeDivider);
+		LOGD("TicksPerSecond = %d (1s = %d)", _ticksPerSecond, _timeDivider);
+		LOGD("UpdateEvery = %3.3f (%0.5lfs)", _updateEvery, _udpateEveryInSeconds);
     }
 
     template <typename T>
