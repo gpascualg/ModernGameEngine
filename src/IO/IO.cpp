@@ -17,7 +17,7 @@ namespace IO
 		FileMapping* fileMapping = new FileMapping;
 
 #if defined(LFS_COMPILER_GCC)
-		fileMapping->fd = open(path.c_str(), O_RDONLY);
+		fileMapping->fd = open(filepath, O_RDONLY);
 		if (fileMapping->fd == -1)
 		{
 			return 0;
@@ -25,14 +25,14 @@ namespace IO
 
 		// obtain file size
 		struct stat sb;
-		if (fstat(fd, &sb) == -1)
+		if (fstat(fileMapping->fd, &sb) == -1)
 		{
 			return 0;
 		}
 
 		fileMapping->length = sb.st_size;
 
-		fileMapping->addr = static_cast<const char*>(mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0u));
+		fileMapping->addr = static_cast<const char*>(mmap(NULL, fileMapping->length, PROT_READ, MAP_PRIVATE, fileMapping->fd, 0u));
 		if (fileMapping->addr == MAP_FAILED)
 		{
 			return 0;

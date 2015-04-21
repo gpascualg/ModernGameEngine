@@ -1,6 +1,8 @@
 #include "Texture.hpp"
 #include "IO.hpp"
 
+#include <string.h>
+
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
@@ -23,7 +25,7 @@ namespace Shader
 		unsigned int dataPos;
 		unsigned int imageSize;
 		unsigned int width, height;
-		
+
 
 		// A BMP files always begins with "BM"
 		if (fp->addr[0] != 'B' || fp->addr[1] != 'M'){
@@ -51,7 +53,7 @@ namespace Shader
 		if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
 
 		// Create a buffer
-		
+
 		// Create one OpenGL texture
 		GLuint textureID;
 		glGenTextures(1, &textureID);
@@ -61,10 +63,10 @@ namespace Shader
 
 		// Give the image to OpenGL
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, (unsigned char*)&fp->addr[dataPos]);
-		
+
 		// Poor filtering, or ...
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 		// ... nice trilinear filtering.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -80,9 +82,9 @@ namespace Shader
 	}
 
 	GLuint Texture::readDXT(const char * imagepath){
-		
+
 		IO::FileMapping* fp = IO::mapFile(imagepath);
-		
+
 		/* verify the type of file */
 		if (strncmp(fp->addr, "DDS ", 4) != 0) {
 			IO::unmapFile(fp);
@@ -98,7 +100,7 @@ namespace Shader
 		unsigned int bufsize;
 		/* how big is it going to be including all mipmaps? */
 		bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
-		
+
 		unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
 		unsigned int format;
 		switch (fourCC)
