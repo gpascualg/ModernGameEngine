@@ -2,7 +2,9 @@
 
 #include "core.hpp"
 #include "Program.hpp"
+#include "Object.hpp"
 #include <glm/gtc/constants.hpp>
+
 
 class Camera
 {
@@ -80,6 +82,11 @@ public:
     void calculateViewMatrix();
     void calculateProjectionMatrix();
 
+	void attachTo(Object* object);
+
+	LFS_INLINE void onObjectMoved();
+	LFS_INLINE void onObjectRotated(glm::vec3 rotation, GLfloat angle);
+
     LFS_INLINE glm::mat4 getMVP()
     {
         return _projection * _view * _model;
@@ -87,10 +94,17 @@ public:
 
     LFS_INLINE void toGPU(Shader::Program* program)
     {
-        glUniformMatrix4fv(program->uniformLocation("MVP"), 1, GL_FALSE, &getMVP()[0][0]);
+		if (_needsGPUUpdate)
+		{
+			glUniformMatrix4fv(program->uniformLocation("MVP"), 1, GL_FALSE, &getMVP()[0][0]);
+			_needsGPUUpdate = false;
+		}
     }
 
 private:
+	Object* _attached;
+
+	bool _needsGPUUpdate;
     bool _locked;
 	bool _interpolate;
 
@@ -110,3 +124,15 @@ private:
     glm::mat4 _view;
     glm::mat4 _projection;
 };
+
+void Camera::onObjectMoved()
+{
+	glm::vec4 result = _model * glm::vec4(_attached->getPosition(), 1);
+	setOBS(glm::vec3(result.x, result.y, result.z) - _dir);
+	//rotateCamera(0, 0);
+}
+
+void Camera::onObjectRotated(glm::vec3 rotation, GLfloat angle)
+{
+	rotateCamera(angle * rotation.y, angle * rotation.z);
+}

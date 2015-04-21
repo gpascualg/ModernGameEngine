@@ -22,11 +22,20 @@ Camera::Camera(glm::vec3 sceneDimensions):
 void Camera::calculateViewMatrix()
 {
     _view = glm::lookAt(_obs, _obs + _dir, _vup);
+	_needsGPUUpdate = true;
 }
 
 void Camera::calculateProjectionMatrix()
 {
     _projection = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
+	_needsGPUUpdate = true;
+}
+
+void Camera::attachTo(Object* object)
+{
+	_attached = object;
+	bind(object, &Object::moved, this, &Camera::onObjectMoved);
+	bind(object, &Object::rotated, this, &Camera::onObjectRotated);
 }
 
 // 1 Obs, camera stans
