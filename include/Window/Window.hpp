@@ -47,6 +47,7 @@ public:
     LFS_INLINE int getWidth();
     LFS_INLINE int getHeight();
     LFS_INLINE void getMouseDelta(uint8_t& buttons, double& x, double& y);
+	LFS_INLINE void getMouseWheel(double& xoffset, double& yoffset);
     LFS_INLINE bool isKeyPressed(int key);
 
     GLFWwindow* operator*()
@@ -62,6 +63,7 @@ signals:
 private:
     static void _resizeHandler(GLFWwindow* w, int width, int height);
     static void _refreshHandler(GLFWwindow* w);
+	static void _scrollHandler(GLFWwindow* w, double xoffset, double yoffset);
 
 private:
     GLFWwindow* _window;
@@ -74,6 +76,9 @@ private:
     bool _fixMouse;
     double _fixMouseX;
     double _fixMouseY;
+
+	double _xScroll;
+	double _yScroll;
 
     static std::map<uintptr_t, Window*> _windowToThis;
 };
@@ -124,6 +129,15 @@ void Window::getMouseDelta(uint8_t& buttons, double& x, double& y)
     {
         glfwSetCursorPos(_window, _fixMouseX, _fixMouseY);
     }
+}
+
+void Window::getMouseWheel(double& xoffset, double& yoffset)
+{
+	xoffset = _xScroll;
+	yoffset = _yScroll;
+
+	_xScroll = 0;
+	_yScroll = 0;
 }
 
 bool Window::isKeyPressed(int key)

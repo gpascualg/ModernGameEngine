@@ -20,6 +20,7 @@ public:
     LFS_INLINE uint32_t getID();
 	LFS_INLINE glm::vec3 getPosition();
 
+	virtual LFS_INLINE void centeredRotation(glm::vec3 rotation, GLfloat angle);
     virtual LFS_INLINE void rotate(glm::vec3 rotation, GLfloat angle);
 	virtual LFS_INLINE void translate(glm::vec3 trans);
 
@@ -49,6 +50,10 @@ LFS_INLINE glm::vec3 Object::getPosition()
 	return _position;
 }
 
+void Object::centeredRotation(glm::vec3 rotation, GLfloat angle) {
+	_transformations = glm::translate(glm::mat4(), _position) * glm::rotate(glm::mat4(), angle, rotation) * glm::translate(glm::mat4(), -_position) * _transformations;
+}
+
 void Object::rotate(glm::vec3 rotation, GLfloat angle) {
 	_transformations = glm::rotate(glm::mat4(), angle, rotation) * _transformations;
 }
@@ -56,4 +61,5 @@ void Object::rotate(glm::vec3 rotation, GLfloat angle) {
 void Object::translate(glm::vec3 trans)
 {
 	_transformations = glm::translate(glm::mat4(), trans) * _transformations;
+	_position += trans;
 }

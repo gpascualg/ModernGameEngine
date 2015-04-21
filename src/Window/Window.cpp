@@ -8,7 +8,9 @@ Window::Window(uint32_t width, uint32_t height, const char* title) :
     _update(false),
     _height(height),
     _width(width),
-    _fixMouse(false)
+    _fixMouse(false),
+	_xScroll(0),
+	_yScroll(0)
 {
     static bool libraryInitialized = false;
     if (!libraryInitialized)
@@ -36,6 +38,7 @@ Window::Window(uint32_t width, uint32_t height, const char* title) :
     /* Setup callbacks */
     glfwSetWindowSizeCallback(_window, _resizeHandler);
     glfwSetWindowRefreshCallback(_window, _refreshHandler);
+	glfwSetScrollCallback(_window, _scrollHandler);
 
     /* Key persistance */
     glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -103,4 +106,11 @@ void Window::_refreshHandler(GLFWwindow* w)
 
     /* Update scheduler */
     Scheduler::get()->update();
+}
+
+void Window::_scrollHandler(GLFWwindow* w, double xoffset, double yoffset)
+{
+	Window* window = _windowToThis[(uintptr_t)w];
+	window->_xScroll = xoffset;
+	window->_yScroll = yoffset;
 }

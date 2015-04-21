@@ -5,6 +5,7 @@
 #include "Object.hpp"
 #include <glm/gtc/constants.hpp>
 
+#define MAX_ZOOM_OUT 4.0f
 
 class Camera
 {
@@ -31,7 +32,7 @@ public:
 			_front = glm::vec3(sin(_angX), 0, cos(_angX));
 		}
 
-        calculateViewMatrix();
+        calculateViewMatrix(&_obs, &dir, &vup);
     }
 
     LFS_INLINE void moveCamera(glm::vec3 speed, glm::vec3 axis)
@@ -43,8 +44,28 @@ public:
 			_obs = obs;
 		}
 
-        calculateViewMatrix();
+        calculateViewMatrix(&obs, &_dir, &_vup);
     }
+
+	LFS_INLINE void zoomIn(float amount)
+	{
+		if (_radius - amount > 0)
+		{
+			_radius -= amount;
+		}
+		calculateViewMatrix();
+		_needsGPUUpdate = true;
+	}
+
+	LFS_INLINE void zoomOut(float amount)
+	{
+		if (_radius - amount < MAX_ZOOM_OUT)
+		{
+			_radius += amount;
+		}
+		calculateViewMatrix();
+		_needsGPUUpdate = true;
+	}
 
 	LFS_INLINE void setInterpolation(bool interpolate)
 	{
@@ -54,7 +75,7 @@ public:
     LFS_INLINE void setDIR(glm::vec3 dir)
     {
         _dir = dir;
-        calculateViewMatrix();
+        calculateViewMatrix(&_obs, &dir, &_vup);
     }
 
     LFS_INLINE void setOBS(glm::vec3 obs)
@@ -79,7 +100,17 @@ public:
         return _locked;
     }
 
-    void calculateViewMatrix();
+	LFS_INLINE glm::vec3 getDirection()
+	{
+		return _locked ? _front : _dir;
+	}
+
+	LFS_INLINE glm::vec3 getHorDirection()
+	{
+		return _right;
+	}
+
+	void calculateViewMatrix(glm::vec3* obs = nullptr, glm::vec3* dir = nullptr, glm::vec3* vup = nullptr);
     void calculateProjectionMatrix();
 
 	void attachTo(Object* object);
@@ -103,6 +134,7 @@ public:
 
 private:
 	Object* _attached;
+	float _radius;
 
 	bool _needsGPUUpdate;
     bool _locked;
@@ -127,12 +159,30 @@ private:
 
 void Camera::onObjectMoved()
 {
-	glm::vec4 result = _model * glm::vec4(_attached->getPosition(), 1);
-	setOBS(glm::vec3(result.x, result.y, result.z) - _dir);
-	//rotateCamera(0, 0);
+	//glm::vec4 result = _model * glm::vec4(_attached->getPosition(), 1);
+	//setOBS(glm::vec3(result.x, result.y, result.z) - _dir);
+	calculateViewMatrix(&_obs, &_dir, &_vup);
 }
 
 void Camera::onObjectRotated(glm::vec3 rotation, GLfloat angle)
 {
-	rotateCamera(angle * rotation.y, angle * rotation.z);
+	double angX = _angX - rotation.y * angle;
+	double angY = _angY - rotation.z * angle;
+
+	glm::vec3 dir = glm::vec3(cos(angY) * sin(angX), -sin(angY), cos(angY) * cos(angX));
+	glm::vec3 right = glm::vec3(sin(angX - glm::half_pi<double>()), 0, cos(angX - glm::half_pi<double>()));
+	glm::vec3 vup = glm::cross(right, dir);
+
+	if (!_interpolate)
+	{
+		_angX = angX;
+		_angY = angY;
+
+		_dir = dir;
+		_right = right;
+		_vup = vup;
+		_front = glm::vec3(sin(_angX), 0, cos(_angX));
+	}
+
+	calculateViewMatrix(&_obs, &dir, &_vup);
 }

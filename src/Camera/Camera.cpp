@@ -5,8 +5,10 @@
 Camera::Camera(glm::vec3 sceneDimensions):
     _angX(0),
     _angY(0),
-    _locked(false),
-	_interpolate(false)
+    _locked(true),
+	_interpolate(false),
+	_attached(nullptr),
+	_radius(2.0f)
 {
     _model = glm::scale(glm::mat4(), glm::vec3(2 / sceneDimensions[0], 2 / sceneDimensions[1], 2 / sceneDimensions[2]));
     _vup = glm::vec3(0, 1, 0);
@@ -19,9 +21,34 @@ Camera::Camera(glm::vec3 sceneDimensions):
     calculateProjectionMatrix();
 }
 
-void Camera::calculateViewMatrix()
+void Camera::calculateViewMatrix(glm::vec3* obs, glm::vec3* dir, glm::vec3* vup)
 {
-    _view = glm::lookAt(_obs, _obs + _dir, _vup);
+	if (!obs)
+	{
+		obs = &_obs;
+	}
+	if (!dir)
+	{
+		dir = &_dir;
+	}
+	if (!vup)
+	{
+		vup = &_vup;
+	}
+
+	if (_attached)
+	{
+		glm::vec4 result = _model * glm::vec4(_attached->getPosition(), 1);
+		glm::vec3 cameraCoordinates = glm::vec3(result.x, result.y, result.z);
+
+		// Attached camera
+		_view = glm::lookAt(cameraCoordinates + *dir * _radius, cameraCoordinates, *vup);
+	}
+	else
+	{
+		// Free camera
+		_view = glm::lookAt(*obs, *obs + *dir, *vup);
+	}
 	_needsGPUUpdate = true;
 }
 
